@@ -337,18 +337,16 @@ function renderPanel(name){
 const EMPTY_HTML = document.getElementById('panelInner').innerHTML;
 
 /* ---------- search pin (troubleshooting aid) ---------- */
-function dropSearchPin(hit){
+function dropSearchPin(hit, label){
   if(searchPin){ map.removeLayer(searchPin); searchPin = null; }
   searchPin = L.circleMarker([hit.lat, hit.lng], {
     radius:8, color:'#ffffff', weight:2.5,
     fillColor:'#1f6feb', fillOpacity:1, pane:'markerPane'
   }).addTo(map);
-  const conf = (hit.confidence != null) ? ` &middot; confidence ${Number(hit.confidence).toFixed(2)}` : '';
-  const typ  = hit.type ? ` &middot; ${hit.type}` : '';
-  searchPin.bindPopup(
-    `<b>${hit.source}</b>${typ}${conf}<br>${hit.lat.toFixed(6)}, ${hit.lng.toFixed(6)}`,
-    {className:'pin-popup'}
-  ).openPopup();
+  if(label){
+    const safe = String(label).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+    searchPin.bindPopup(safe, {className:'pin-popup'}).openPopup();
+  }
 }
 
 /* ---------- point-in-polygon (picks smallest matching polygon) ---------- */
@@ -459,11 +457,12 @@ document.getElementById('searchForm').addEventListener('submit', async e=>{
   e.preventDefault();
   let q = document.getElementById('addr').value.trim();
   if(!q) return;
+  const typedAddress = q;
   if(!/falls church|22046|22042|22043|,\s*va/i.test(q)) q += ', Falls Church, VA';
   flashMsg('Looking up address\u2026');
   const hit = await geocode(q);
   if(!hit){ flashMsg('Address not found \u2014 try adding a zip code, or click a zone.'); return; }
-  dropSearchPin(hit);
+  dropSearchPin(hit, typedAddress);
   const name = findNeighborhood(hit.lng, hit.lat);
   if(!name){
     map.flyTo([hit.lat, hit.lng], 16, {duration:.6});
@@ -484,7 +483,7 @@ document.getElementById('locBtn').addEventListener('click', ()=>{
     pos => {
       btn.classList.remove('busy');
       const hit = {lat: pos.coords.latitude, lng: pos.coords.longitude, source:'your location', type:'GPS'};
-      dropSearchPin(hit);
+      dropSearchPin(hit, 'Your location');
       const name = findNeighborhood(hit.lng, hit.lat);
       if(!name){
         map.flyTo([hit.lat, hit.lng], 15, {duration:.6});
