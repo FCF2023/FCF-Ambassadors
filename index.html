@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>Falls Church Neighborhoods &amp; Ambassadors</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+  integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,800&family=Hanken+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#faf5ea; --paper-2:#f3ead8; --ink:#23291f; --ink-soft:#5b6450;
+    --green:#2f6b4f; --green-d:#234f3b; --terra:#d9613a; --terra-d:#b94a27;
+    --gold:#e3a93b; --line:#dccfb4; --shadow:0 10px 30px -12px rgba(35,41,31,.45);
+    --r:14px;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;height:100%;}
+  body{font-family:'Hanken Grotesk',system-ui,sans-serif;color:var(--ink);background:var(--paper);-webkit-font-smoothing:antialiased;}
+
+  #app{display:grid;grid-template-columns:1fr 360px;grid-template-rows:auto 1fr;grid-template-areas:"head head" "map panel";height:100vh;height:100dvh;}
+
+  /* header */
+  header{grid-area:head;display:flex;align-items:center;gap:16px;padding:14px 20px;background:linear-gradient(0deg,rgba(0,0,0,.04),rgba(0,0,0,.04)),var(--green);color:#f6f1e4;border-bottom:3px solid var(--green-d);}
+  .brand{display:flex;flex-direction:column;line-height:1;flex-shrink:0;}
+  .brand .eyebrow{font-size:10px;letter-spacing:.28em;text-transform:uppercase;color:var(--gold);font-weight:700;margin-bottom:5px;}
+  .brand h1{font-family:'Fraunces',serif;font-weight:600;font-size:23px;margin:0;color:#fbf7ec;}
+  .brand h1 em{font-style:italic;color:var(--gold);}
+  .controls{display:flex;gap:8px;flex:1;max-width:600px;margin-left:auto;}
+  .search{position:relative;flex:1;}
+  .search form{display:flex;gap:8px;}
+  .search input{
+    flex:1;font-family:'Hanken Grotesk';font-size:15px;
+    padding:12px 14px 12px 40px;border:none;border-radius:10px;
+    background:var(--paper) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='17' height='17' viewBox='0 0 24 24' fill='none' stroke='%235b6450' stroke-width='2.2' stroke-linecap='round'%3E%3Ccircle cx='11' cy='11' r='7'/%3E%3Cline x1='21' y1='21' x2='16.65' y2='16.65'/%3E%3C/svg%3E") no-repeat 13px center;
+    color:var(--ink);box-shadow:inset 0 1px 2px rgba(0,0,0,.12);outline:none;
+  }
+  .search input::placeholder{color:#8c9182;}
+  .search button{font-family:'Hanken Grotesk';font-weight:700;font-size:14px;padding:0 18px;border:none;border-radius:10px;cursor:pointer;background:var(--terra);color:#fff;transition:background .15s;flex-shrink:0;}
+  .search button:hover{background:var(--terra-d);}
+  .loc-btn{padding:0 12px!important;background:var(--paper)!important;color:var(--green-d)!important;border:1px solid var(--line)!important;display:flex;align-items:center;justify-content:center;}
+  .loc-btn:hover{background:#fff!important;}
+  .loc-btn.busy{opacity:.6;pointer-events:none;}
+  .loc-btn.busy svg{animation:spin 1s linear infinite;}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .search-msg{position:absolute;left:0;top:calc(100% + 6px);font-size:13px;font-weight:600;color:#fbe6c4;background:rgba(35,41,31,.6);padding:5px 10px;border-radius:7px;backdrop-filter:blur(2px);opacity:0;transform:translateY(-4px);transition:.2s;pointer-events:none;white-space:nowrap;z-index:900;}
+  .search-msg.show{opacity:1;transform:none;}
+
+  /* map */
+  #map{grid-area:map;height:100%;width:100%;background:var(--paper-2);position:relative;}
+  .leaflet-container{font-family:'Hanken Grotesk';}
+
+  /* tooltips */
+  .hood-tip{font-family:'Hanken Grotesk';font-weight:700;font-size:13px;color:var(--ink);background:var(--paper);border:1.5px solid var(--green);border-radius:8px;padding:4px 9px;box-shadow:var(--shadow);}
+  .hood-tip:before{display:none;}
+  .zone-label{
+    background:none!important;border:none!important;box-shadow:none!important;padding:0!important;
+    font-family:'Fraunces',serif;font-weight:600;font-size:14px;color:var(--ink);
+    text-shadow:0 1px 4px rgba(250,245,234,.95),0 0 10px rgba(250,245,234,.95);
+    white-space:nowrap;pointer-events:none;
+  }
+  .zone-label:before{display:none!important;}
+  .pin-popup .leaflet-popup-content{font-family:'Hanken Grotesk';font-size:12.5px;line-height:1.45;margin:10px 12px;}
+  .pin-popup b{text-transform:capitalize;color:var(--green-d);}
+
+  /* panel */
+  #panel{grid-area:panel;background:var(--paper);border-left:1px solid var(--line);overflow-y:auto;display:flex;flex-direction:column;}
+  .panel-inner{padding:26px 24px 32px;}
+  .panel-empty{color:var(--ink-soft);}
+  .panel-empty .glyph{width:54px;height:54px;border-radius:50%;display:grid;place-items:center;margin-bottom:16px;background:var(--paper-2);border:1px dashed var(--line);}
+  .panel-empty h2{font-family:'Fraunces',serif;font-weight:600;font-size:21px;color:var(--ink);margin:0 0 8px;}
+  .panel-empty p{font-size:14.5px;line-height:1.55;margin:0 0 16px;}
+
+  .hood-eyebrow{font-size:10px;letter-spacing:.26em;text-transform:uppercase;font-weight:700;color:var(--terra-d);margin-bottom:7px;}
+  .hood-name{font-family:'Fraunces',serif;font-weight:600;font-size:28px;line-height:1.08;margin:0 0 18px;color:var(--ink);}
+  .rule{height:1px;background:var(--line);margin:0 0 18px;}
+  .amb-card{background:var(--paper-2);border:1px solid var(--line);border-radius:var(--r);padding:18px;margin-bottom:18px;}
+  .amb-head{display:flex;align-items:center;gap:14px;margin-bottom:12px;}
+  .amb-avatar{width:50px;height:50px;border-radius:50%;flex-shrink:0;background:var(--green);color:#fbf7ec;display:grid;place-items:center;font-family:'Fraunces',serif;font-weight:600;font-size:20px;overflow:hidden;}
+  .amb-avatar img{width:100%;height:100%;object-fit:cover;}
+  .amb-label{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-soft);font-weight:700;}
+  .amb-name{font-family:'Fraunces',serif;font-weight:600;font-size:19px;color:var(--ink);line-height:1.1;margin-top:2px;}
+  .amb-name.pending{font-family:'Hanken Grotesk';font-style:italic;font-weight:500;font-size:16px;color:var(--ink-soft);}
+  .amb-blurb{font-size:14px;line-height:1.55;color:var(--ink-soft);margin:0 0 14px;}
+  .amb-contact{display:flex;flex-direction:column;gap:8px;}
+  .amb-contact a{display:flex;align-items:center;gap:9px;font-size:14px;font-weight:600;color:var(--green-d);text-decoration:none;}
+  .amb-contact a:hover{text-decoration:underline;}
+  .cta{display:block;text-align:center;font-family:'Hanken Grotesk';font-weight:700;font-size:15px;padding:14px;border-radius:11px;background:var(--terra);color:#fff;text-decoration:none;transition:background .15s;}
+  .cta:hover{background:var(--terra-d);}
+  .cta.ghost{background:transparent;color:var(--green-d);border:1.5px solid var(--green);margin-top:10px;}
+  .cta.ghost:hover{background:rgba(47,107,79,.07);}
+  .panel-foot{margin-top:auto;padding:16px 24px;border-top:1px solid var(--line);font-size:12px;color:var(--ink-soft);line-height:1.5;}
+
+  /* mobile */
+  @media(max-width:760px){
+    #app{grid-template-columns:1fr;grid-template-rows:auto 1fr auto;grid-template-areas:"head" "map" "panel";}
+    header{flex-wrap:wrap;gap:10px;padding:12px 14px;}
+    .brand h1{font-size:19px;}
+    .controls{max-width:none;margin-left:0;width:100%;}
+    #panel{max-height:44vh;border-left:none;border-top:1px solid var(--line);box-shadow:0 -8px 24px -16px rgba(0,0,0,.5);}
+    .panel-inner{padding:18px 16px 22px;}
+    .panel-foot{display:none;}
+  }
+</style>
+</head>
+<body>
+<div id="app">
+  <header>
+    <div class="brand">
+      <span class="eyebrow">Falls Church Forward</span>
+      <h1>Find Your <em>Ambassador</em></h1>
+    </div>
+    <div class="search" style="flex:1;max-width:560px;margin-left:auto;position:relative;">
+        <form id="searchForm" autocomplete="off">
+          <input id="addr" type="text" placeholder="Enter your address…" aria-label="Street address">
+          <button type="submit">Search</button>
+          <button type="button" id="locBtn" class="loc-btn" aria-label="Use my current location" title="Use my location">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/><circle cx="12" cy="12" r="8"/></svg>
+          </button>
+        </form>
+        <div class="search-msg" id="searchMsg"></div>
+      </div>
+  </header>
+
+  <div id="map"></div>
+
+  <aside id="panel">
+    <div class="panel-inner" id="panelInner">
+      <div class="panel-empty">
+        <div class="glyph">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#5b6450" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+        </div>
+        <h2>Find your zone</h2>
+        <p>Type your street address, tap the&nbsp;<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#b94a27" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-1px"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/><circle cx="12" cy="12" r="8"/></svg>&nbsp;button to use your current location, or tap any zone on the map to meet your community ambassador.</p>
+      </div>
+    </div>
+    <div class="panel-foot">
+      Zone boundaries defined by community ambassadors. Address lookup uses Virginia's authoritative VGIN address points, with the U.S. Census Bureau as a fallback. No tracking required.
+    </div>
+  </aside>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+  integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<script src="https://unpkg.com/@turf/turf@6/turf.min.js"></script>
+<script>
+/* ============================================================
+   AMBASSADOR DATA — edit these to go live.
+   Zone names must match exactly what's in the KMZ/GeoJSON.
+   Fields: name, email, phone, blurb, photo (URL, optional).
+   Leave name as "" to show the volunteer-recruitment state.
+   ============================================================ */
+const AMBASSADORS = {
+  "Naudy's Zone": {
+    "name": "Naudy",
+    "email": "naudy@example.com",
+    "phone": "(703) 555-0187",
+    "blurb": "Covers the northern part of Falls Church."
+  },
+  "Evan's Zone": {
+    "name": "Evan",
+    "email": "evan@example.com",
+    "phone": "(703) 555-0143",
+    "blurb": "Covers the eastern half of Falls Church."
+  },
+  "Robin's Zone": {
+    "name": "Robin",
+    "email": "robin@example.com",
+    "phone": "(703) 555-0127",
+    "blurb": "Covers the western half of Falls Church."
+  },
+  "Virginia Village": {
+    "name": "",
+    "email": "",
+    "phone": "",
+    "blurb": ""
+  },
+  "Pearson Square": {
+    "name": "",
+    "email": "",
+    "phone": "",
+    "blurb": ""
+  },
+  "West Broad": {
+    "name": "",
+    "email": "",
+    "phone": "",
+    "blurb": ""
+  },
+  "455 at Tinner Hill": {
+    "name": "",
+    "email": "",
+    "phone": "",
+    "blurb": ""
+  }
+};
+
+const GET_INVOLVED_URL = "https://fallschurchforward.org/community-ambassadors";
+
+/* ============================================================
+   Map data (auto-generated from KMZ — no need to edit below)
+   ============================================================ */
+const NEIGHBORHOODS = {"type":"FeatureCollection","features":[{"type":"Feature","properties":{"name":"Naudy's Zone"},"geometry":{"type":"Polygon","coordinates":[[[-77.16486,38.8857],[-77.16365,38.8865],[-77.16526,38.88776],[-77.17229,38.89325],[-77.18881,38.89627],[-77.19146,38.89777],[-77.19358,38.89681],[-77.18504,38.8912],[-77.17864,38.88718],[-77.18067,38.88479],[-77.18141,38.88424],[-77.1819,38.8839],[-77.18197,38.88361],[-77.1805,38.8821],[-77.1794,38.88084],[-77.17906,38.88056],[-77.17772,38.88131],[-77.17757,38.8813],[-77.17619,38.88178],[-77.17506,38.88263],[-77.17449,38.88302],[-77.17415,38.88323],[-77.17474,38.88358],[-77.17435,38.88444],[-77.17115,38.88238],[-77.1685,38.8842],[-77.16486,38.8857]]]}},{"type":"Feature","properties":{"name":"Evan's Zone"},"geometry":{"type":"Polygon","coordinates":[[[-77.1497,38.87561],[-77.16094,38.8844],[-77.16346,38.88635],[-77.16565,38.88518],[-77.16787,38.88442],[-77.17696,38.87917],[-77.17338,38.87866],[-77.15826,38.87313],[-77.15805,38.87342],[-77.15751,38.87333],[-77.15558,38.87249],[-77.15318,38.87303],[-77.15132,38.87349],[-77.14982,38.8734],[-77.1497,38.87561]]]}},{"type":"Feature","properties":{"name":"Robin's Zone"},"geometry":{"type":"Polygon","coordinates":[[[-77.17932,38.87919],[-77.17922,38.88037],[-77.18098,38.88259],[-77.18202,38.88355],[-77.18216,38.88382],[-77.18107,38.88456],[-77.17899,38.88711],[-77.18995,38.89423],[-77.19144,38.89357],[-77.19215,38.89281],[-77.191,38.89226],[-77.1942,38.88624],[-77.18974,38.87811],[-77.18784,38.87871],[-77.18347,38.87892],[-77.17932,38.87919]]]}},{"type":"Feature","properties":{"name":"Virginia Village"},"geometry":{"type":"Polygon","coordinates":[[[-77.17693,38.88125],[-77.17632,38.88071],[-77.17475,38.88114],[-77.17427,38.8814],[-77.17555,38.88226],[-77.17693,38.88125]]]}},{"type":"Feature","properties":{"name":"Pearson Square"},"geometry":{"type":"Polygon","coordinates":[[[-77.17901,38.88056],[-77.1783,38.87986],[-77.17691,38.88048],[-77.17772,38.88131],[-77.17901,38.88056]]]}},{"type":"Feature","properties":{"name":"West Broad"},"geometry":{"type":"Polygon","coordinates":[[[-77.17434,38.88422],[-77.17457,38.88402],[-77.1746,38.88359],[-77.17415,38.88323],[-77.17449,38.88302],[-77.17397,38.88274],[-77.17305,38.8834],[-77.17434,38.88422]]]}},{"type":"Feature","properties":{"name":"455 at Tinner Hill"},"geometry":{"type":"Polygon","coordinates":[[[-77.17845,38.87978],[-77.17808,38.87936],[-77.17655,38.8797],[-77.17691,38.88048],[-77.17845,38.87978]]]}}]};
+
+// City boundary (reference outline only — not interactive)
+const CITY_BOUNDARY = {"type":"FeatureCollection","features":[{"type":"Feature","properties":{"name":"Falls Church"},"geometry":{"type":"Polygon","coordinates":[[[-77.19159,38.89977],[-77.19197,38.89985],[-77.19251,38.8998],[-77.19305,38.89969],[-77.19324,38.89963],[-77.19344,38.89958],[-77.19363,38.89952],[-77.19383,38.89946],[-77.19402,38.8994],[-77.19421,38.89933],[-77.19426,38.89932],[-77.19431,38.8993],[-77.19436,38.89927],[-77.19486,38.8988],[-77.19487,38.89877],[-77.19487,38.89873],[-77.19488,38.89869],[-77.19488,38.89865],[-77.19489,38.8986],[-77.19489,38.89856],[-77.19488,38.89851],[-77.19488,38.89846],[-77.19487,38.89841],[-77.19487,38.89836],[-77.19486,38.89831],[-77.19465,38.89784],[-77.19457,38.89776],[-77.19453,38.89773],[-77.19449,38.89771],[-77.19445,38.89769],[-77.19441,38.89766],[-77.19361,38.89724],[-77.1936,38.89723],[-77.19358,38.89722],[-77.19356,38.8972],[-77.19355,38.89719],[-77.19354,38.89717],[-77.19353,38.89715],[-77.19352,38.89714],[-77.19352,38.89712],[-77.19352,38.8971],[-77.19352,38.89708],[-77.19352,38.89706],[-77.19353,38.89704],[-77.19354,38.89703],[-77.19355,38.89701],[-77.19357,38.89699],[-77.19365,38.89692],[-77.19042,38.89484],[-77.1901,38.89466],[-77.18983,38.89448],[-77.18982,38.89447],[-77.18988,38.89435],[-77.18995,38.89423],[-77.19008,38.89398],[-77.19022,38.89372],[-77.19028,38.89361],[-77.19032,38.89352],[-77.19038,38.89341],[-77.19049,38.89322],[-77.19059,38.89302],[-77.19069,38.89284],[-77.19069,38.89283],[-77.1907,38.89284],[-77.19097,38.89289],[-77.19073,38.89317],[-77.19144,38.89357],[-77.19215,38.89281],[-77.19174,38.89254],[-77.19094,38.89239],[-77.19093,38.89238],[-77.191,38.89226],[-77.19105,38.89216],[-77.19116,38.89194],[-77.19122,38.89183],[-77.19135,38.8916],[-77.19137,38.89155],[-77.19148,38.89134],[-77.19156,38.89119],[-77.19165,38.89104],[-77.19173,38.89088],[-77.19187,38.89062],[-77.19188,38.89059],[-77.19192,38.89052],[-77.19198,38.89042],[-77.19208,38.89022],[-77.19216,38.89007],[-77.1922,38.89],[-77.19223,38.88994],[-77.19245,38.88952],[-77.19255,38.88933],[-77.19268,38.8891],[-77.19272,38.88901],[-77.1928,38.88887],[-77.19283,38.8888],[-77.19284,38.88879],[-77.19289,38.88871],[-77.19303,38.88844],[-77.19312,38.88826],[-77.1932,38.88811],[-77.19337,38.88779],[-77.1934,38.88773],[-77.19345,38.88764],[-77.19359,38.88737],[-77.19363,38.8873],[-77.19367,38.88722],[-77.1937,38.88718],[-77.19373,38.88713],[-77.19392,38.88675],[-77.19395,38.8867],[-77.19403,38.88655],[-77.1942,38.88624],[-77.19427,38.88611],[-77.19423,38.88603],[-77.19386,38.88537],[-77.19385,38.88536],[-77.19374,38.88517],[-77.19361,38.88494],[-77.19334,38.88446],[-77.19325,38.88431],[-77.19312,38.88408],[-77.19303,38.88392],[-77.19282,38.88356],[-77.19261,38.88318],[-77.19258,38.88312],[-77.19254,38.88305],[-77.19232,38.88266],[-77.19229,38.88262],[-77.19228,38.8826],[-77.19223,38.88251],[-77.19203,38.88217],[-77.19191,38.88194],[-77.1919,38.88192],[-77.19181,38.88176],[-77.1917,38.88158],[-77.1916,38.88141],[-77.19128,38.88083],[-77.19121,38.88072],[-77.19109,38.8805],[-77.19095,38.88025],[-77.1909,38.88017],[-77.19074,38.87988],[-77.19065,38.87972],[-77.19042,38.87931],[-77.19033,38.87915],[-77.19014,38.87882],[-77.18989,38.87837],[-77.18977,38.87816],[-77.18974,38.87811],[-77.18962,38.87816],[-77.18936,38.87826],[-77.18899,38.87841],[-77.18825,38.87869],[-77.18784,38.87871],[-77.1872,38.87875],[-77.18696,38.87877],[-77.18676,38.87878],[-77.18584,38.87883],[-77.18534,38.87886],[-77.18401,38.87893],[-77.1808,38.87911],[-77.17952,38.87919],[-77.17906,38.87943],[-77.17892,38.87942],[-77.17851,38.87936],[-77.17774,38.87927],[-77.17756,38.87925],[-77.17751,38.87924],[-77.17696,38.87917],[-77.17657,38.87913],[-77.17639,38.8791],[-77.17628,38.87909],[-77.17615,38.87907],[-77.17566,38.87901],[-77.17494,38.87892],[-77.17411,38.87882],[-77.17369,38.87877],[-77.17338,38.87866],[-77.17327,38.87862],[-77.17315,38.87857],[-77.1729,38.87848],[-77.17261,38.87838],[-77.17254,38.87835],[-77.17224,38.87824],[-77.1722,38.87822],[-77.17209,38.87819],[-77.17184,38.87809],[-77.17167,38.87803],[-77.17166,38.87803],[-77.17158,38.878],[-77.17149,38.87797],[-77.17136,38.87792],[-77.17103,38.8778],[-77.17095,38.87777],[-77.17083,38.87772],[-77.16934,38.87718],[-77.16931,38.87717],[-77.1692,38.87713],[-77.16912,38.8771],[-77.16902,38.87707],[-77.16891,38.87703],[-77.16883,38.877],[-77.16876,38.87697],[-77.16867,38.87694],[-77.16809,38.87673],[-77.16783,38.87663],[-77.16759,38.87655],[-77.16754,38.87653],[-77.16744,38.87649],[-77.16712,38.87637],[-77.16665,38.8762],[-77.16649,38.87615],[-77.16637,38.8761],[-77.16613,38.87602],[-77.16574,38.87587],[-77.16559,38.87581],[-77.16524,38.87568],[-77.16503,38.87561],[-77.16478,38.87551],[-77.16449,38.8754],[-77.16433,38.87534],[-77.16412,38.87526],[-77.16389,38.87518],[-77.16387,38.87517],[-77.16373,38.87512],[-77.16365,38.8751],[-77.1634,38.87501],[-77.16323,38.87495],[-77.16293,38.87484],[-77.16265,38.87474],[-77.16245,38.87467],[-77.16235,38.87463],[-77.16199,38.87449],[-77.16178,38.87442],[-77.1616,38.87435],[-77.16131,38.87425],[-77.16105,38.87415],[-77.16091,38.8741],[-77.16078,38.87405],[-77.16056,38.87397],[-77.16047,38.87394],[-77.16046,38.87394],[-77.16033,38.87389],[-77.15998,38.87376],[-77.15941,38.87355],[-77.15939,38.87355],[-77.15826,38.87313],[-77.15825,38.87315],[-77.15818,38.87324],[-77.15817,38.87325],[-77.15805,38.87342],[-77.15751,38.87333],[-77.15749,38.87337],[-77.15748,38.87339],[-77.15748,38.8734],[-77.15747,38.87341],[-77.15747,38.87342],[-77.15747,38.87344],[-77.15747,38.87345],[-77.15747,38.87347],[-77.15748,38.87348],[-77.15748,38.87349],[-77.15749,38.87351],[-77.1575,38.87352],[-77.1575,38.87353],[-77.15751,38.87354],[-77.15752,38.87355],[-77.15755,38.87357],[-77.15757,38.87359],[-77.15759,38.87361],[-77.15761,38.87363],[-77.15763,38.87365],[-77.15766,38.87367],[-77.15768,38.87369],[-77.1577,38.87372],[-77.15773,38.87374],[-77.15775,38.87376],[-77.15778,38.87378],[-77.1578,38.8738],[-77.15782,38.87382],[-77.15784,38.87384],[-77.15787,38.87386],[-77.15789,38.87388],[-77.15792,38.87389],[-77.15794,38.87391],[-77.15797,38.87393],[-77.15799,38.87395],[-77.15802,38.87397],[-77.15804,38.87399],[-77.15807,38.87401],[-77.15809,38.87403],[-77.15812,38.87405],[-77.15814,38.87407],[-77.15817,38.87408],[-77.15819,38.8741],[-77.15822,38.87412],[-77.15825,38.87414],[-77.15827,38.87416],[-77.1583,38.87417],[-77.15833,38.87419],[-77.15835,38.87421],[-77.15838,38.87423],[-77.15841,38.87424],[-77.15827,38.87439],[-77.15755,38.87395],[-77.15752,38.87394],[-77.15749,38.87392],[-77.15746,38.87391],[-77.15744,38.87389],[-77.15741,38.87388],[-77.15738,38.87386],[-77.15735,38.87384],[-77.15733,38.87383],[-77.1573,38.87381],[-77.15727,38.8738],[-77.15724,38.87378],[-77.15721,38.87376],[-77.15719,38.87374],[-77.15716,38.87373],[-77.15713,38.87371],[-77.15711,38.87369],[-77.15708,38.87367],[-77.15705,38.87366],[-77.15703,38.87364],[-77.157,38.87362],[-77.15697,38.8736],[-77.15695,38.87358],[-77.15692,38.87357],[-77.1569,38.87355],[-77.15687,38.87353],[-77.15685,38.87351],[-77.15682,38.87349],[-77.15679,38.87347],[-77.15677,38.87345],[-77.15675,38.87343],[-77.15672,38.87342],[-77.1567,38.8734],[-77.15667,38.87338],[-77.15665,38.87336],[-77.15663,38.87334],[-77.1566,38.87332],[-77.15658,38.8733],[-77.15655,38.87328],[-77.15653,38.87326],[-77.1565,38.87324],[-77.15648,38.87322],[-77.15646,38.87319],[-77.15643,38.87317],[-77.15641,38.87315],[-77.15639,38.87313],[-77.15637,38.87311],[-77.15635,38.87309],[-77.15632,38.87307],[-77.1563,38.87305],[-77.15628,38.87302],[-77.15626,38.873],[-77.15624,38.87298],[-77.15622,38.87296],[-77.1562,38.87294],[-77.15618,38.87292],[-77.15615,38.87289],[-77.15613,38.87287],[-77.15611,38.87285],[-77.15609,38.87283],[-77.15607,38.8728],[-77.15605,38.87278],[-77.15604,38.87276],[-77.15602,38.87274],[-77.156,38.87271],[-77.15598,38.87269],[-77.15596,38.87267],[-77.15593,38.87265],[-77.15591,38.87263],[-77.15588,38.87262],[-77.15586,38.8726],[-77.15583,38.87259],[-77.1558,38.87257],[-77.15577,38.87256],[-77.15574,38.87255],[-77.15558,38.87249],[-77.15555,38.87248],[-77.15525,38.87271],[-77.15467,38.87272],[-77.15396,38.87272],[-77.15368,38.87282],[-77.15279,38.87314],[-77.15225,38.87333],[-77.15132,38.87349],[-77.14982,38.8734],[-77.14981,38.87346],[-77.14981,38.87349],[-77.14981,38.87353],[-77.14979,38.87401],[-77.14972,38.87512],[-77.14971,38.87524],[-77.14971,38.87542],[-77.1497,38.87561],[-77.1497,38.87562],[-77.14971,38.87563],[-77.14992,38.8758],[-77.15011,38.87595],[-77.1503,38.87609],[-77.15036,38.87614],[-77.1506,38.87633],[-77.15067,38.87638],[-77.15094,38.87659],[-77.15112,38.87674],[-77.15116,38.87677],[-77.1514,38.87695],[-77.15153,38.87706],[-77.15172,38.87721],[-77.15192,38.87736],[-77.15208,38.87749],[-77.15224,38.87761],[-77.15273,38.87799],[-77.15285,38.87808],[-77.1532,38.87835],[-77.15333,38.87846],[-77.15351,38.87859],[-77.15373,38.87877],[-77.15408,38.87904],[-77.15413,38.87908],[-77.15431,38.87922],[-77.15448,38.87936],[-77.1547,38.87953],[-77.15473,38.87955],[-77.15489,38.87967],[-77.15508,38.87982],[-77.15522,38.87993],[-77.15541,38.88008],[-77.15543,38.88009],[-77.15559,38.88022],[-77.15575,38.88034],[-77.1559,38.88046],[-77.15591,38.88047],[-77.15607,38.88059],[-77.15639,38.88084],[-77.15659,38.88099],[-77.1567,38.88108],[-77.15681,38.88117],[-77.15686,38.88121],[-77.15713,38.88142],[-77.1573,38.88156],[-77.15747,38.88169],[-77.15763,38.88181],[-77.15776,38.88191],[-77.15779,38.88193],[-77.15796,38.88206],[-77.15813,38.8822],[-77.15829,38.88232],[-77.15913,38.88298],[-77.15932,38.88313],[-77.1595,38.88326],[-77.15957,38.88332],[-77.15989,38.88357],[-77.15991,38.88358],[-77.16213,38.88531],[-77.1626,38.88569],[-77.1631,38.88607],[-77.16346,38.88635],[-77.16365,38.8865],[-77.16391,38.8867],[-77.16398,38.88676],[-77.16454,38.8872],[-77.16526,38.88776],[-77.16532,38.88781],[-77.16555,38.88799],[-77.16568,38.88808],[-77.1658,38.88818],[-77.16596,38.88831],[-77.16636,38.88862],[-77.16652,38.88874],[-77.16666,38.88885],[-77.16688,38.88902],[-77.167,38.88912],[-77.16725,38.88932],[-77.16764,38.88961],[-77.16771,38.88966],[-77.16802,38.88991],[-77.1681,38.88997],[-77.16858,38.89035],[-77.16878,38.8905],[-77.16901,38.89068],[-77.16924,38.89086],[-77.16934,38.89094],[-77.16956,38.89112],[-77.16976,38.89127],[-77.16996,38.89143],[-77.17016,38.89158],[-77.1705,38.89185],[-77.17078,38.89207],[-77.17103,38.89226],[-77.17118,38.89238],[-77.17141,38.89256],[-77.17159,38.8927],[-77.17178,38.89285],[-77.17196,38.89299],[-77.17214,38.89313],[-77.17229,38.89325],[-77.1723,38.89326],[-77.17237,38.89327],[-77.1726,38.89331],[-77.17288,38.89336],[-77.17298,38.89338],[-77.17319,38.89342],[-77.17342,38.89346],[-77.17364,38.8935],[-77.17398,38.89356],[-77.17431,38.89362],[-77.1747,38.89369],[-77.17479,38.89371],[-77.17504,38.89376],[-77.17515,38.89378],[-77.17542,38.89383],[-77.17561,38.89386],[-77.17572,38.89388],[-77.17585,38.8939],[-77.17625,38.89398],[-77.17643,38.89401],[-77.17704,38.89412],[-77.17708,38.89413],[-77.17744,38.89419],[-77.17766,38.89423],[-77.17807,38.89431],[-77.17829,38.89435],[-77.17831,38.89435],[-77.17874,38.89443],[-77.17894,38.89447],[-77.17909,38.89449],[-77.17919,38.89451],[-77.1795,38.89457],[-77.17956,38.89458],[-77.17979,38.89462],[-77.18005,38.89467],[-77.18036,38.89473],[-77.18071,38.89479],[-77.18107,38.89485],[-77.18127,38.89489],[-77.18137,38.89491],[-77.18164,38.89496],[-77.18181,38.89499],[-77.18198,38.89502],[-77.18208,38.89504],[-77.18219,38.89506],[-77.18233,38.89508],[-77.18271,38.89516],[-77.18273,38.89516],[-77.18286,38.89518],[-77.18304,38.89522],[-77.18322,38.89525],[-77.18359,38.89531],[-77.18382,38.89536],[-77.1844,38.89546],[-77.18448,38.89548],[-77.18477,38.89553],[-77.18482,38.89554],[-77.18493,38.89556],[-77.18517,38.8956],[-77.18546,38.89565],[-77.18564,38.89569],[-77.18606,38.89577],[-77.18626,38.8958],[-77.18637,38.89582],[-77.18659,38.89586],[-77.18684,38.89591],[-77.18714,38.89596],[-77.1872,38.89597],[-77.18722,38.89598],[-77.18764,38.89605],[-77.18765,38.89606],[-77.18779,38.89608],[-77.18781,38.89609],[-77.18792,38.89611],[-77.18793,38.89611],[-77.18823,38.89617],[-77.18844,38.8962],[-77.18862,38.89624],[-77.18881,38.89627],[-77.18886,38.89628],[-77.18894,38.89613],[-77.18895,38.89614],[-77.18945,38.89646],[-77.19052,38.89714],[-77.19146,38.89777],[-77.19144,38.89779],[-77.19062,38.89869],[-77.19133,38.8996],[-77.19134,38.8996],[-77.19144,38.89967],[-77.19159,38.89977]]]}}]};
+
+// Zones (large polygons) get permanent labels; sites get hover-only.
+// Detected by name containing "Zone" — adjust if naming changes.
+const isZone = name => name.toLowerCase().includes('zone');
+
+function pretty(name){ return name.trim(); }
+
+const map = L.map('map', {zoomControl:false});
+L.control.zoom({position:'topright'}).addTo(map);
+
+L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',{
+  attribution:'&copy; OpenStreetMap contributors &copy; CARTO',
+  subdomains:'abcd', maxZoom:20
+}).addTo(map);
+
+const PALETTE = ['#9fb89a','#d8a98a','#a9c2c9','#bcc58a','#d6a9a3','#e6cf9c','#c9b79e'];
+const BASE_STYLE  = i => ({color:'#234f3b',weight:1.6,opacity:.9,fillColor:PALETTE[i%PALETTE.length],fillOpacity:.45});
+const HOVER_STYLE = {weight:2.6, fillOpacity:.65};
+const SELECT_STYLE= {color:'#b94a27',weight:3,fillColor:'#d9613a',fillOpacity:.6};
+
+// City boundary: drawn first so it sits beneath the zones. Dashed outline,
+// no fill, non-interactive — purely a reference frame for the city limits.
+const cityLayer = L.geoJSON(CITY_BOUNDARY, {
+  interactive: false,
+  style: { color:'#7d5a3c', weight:2, opacity:.7, dashArray:'6 5', fill:false }
+}).addTo(map);
+
+let selectedName = null;
+let searchPin = null;
+const layerIndex = {}; // name → layer
+
+const geoLayer = L.geoJSON(NEIGHBORHOODS, {
+  style: feat => BASE_STYLE(feat.__idx ?? 0),
+  onEachFeature(feat, layer){
+    const name = feat.properties.name;
+    feat.__idx = Object.keys(layerIndex).length;
+    layer.setStyle(BASE_STYLE(feat.__idx));
+    layerIndex[name] = layer;
+
+    // Permanent centered label for zones; hover tooltip for small sites
+    if(isZone(name)){
+      layer.bindTooltip(pretty(name), {permanent:true, direction:'center', className:'zone-label', interactive:false, opacity:1});
+    } else {
+      layer.bindTooltip(pretty(name), {sticky:true, direction:'top', className:'hood-tip', opacity:1});
+    }
+
+    layer.on('mouseover', ()=>{ if(name !== selectedName) layer.setStyle(HOVER_STYLE); });
+    layer.on('mouseout',  ()=>{ if(name !== selectedName) layer.setStyle(BASE_STYLE(feat.__idx)); });
+    layer.on('click', e =>{
+      L.DomEvent.stopPropagation(e);
+      select(name, false);
+    });
+  }
+}).addTo(map);
+
+// Frame the whole city (boundary), and let people pan a little beyond it.
+const cityBounds = cityLayer.getBounds();
+map.fitBounds(cityBounds, {padding:[20,20]});
+map.setMaxBounds(cityBounds.pad(0.35));
+
+/* ---------- selection ---------- */
+function clearSelection(){
+  for(const [n, l] of Object.entries(layerIndex)){
+    l.setStyle(BASE_STYLE(l.feature.__idx));
+  }
+  selectedName = null;
+}
+
+function select(name, fly){
+  clearSelection();
+  selectedName = name;
+  const layer = layerIndex[name];
+  if(layer){
+    layer.setStyle(SELECT_STYLE);
+    if(fly) map.flyToBounds(layer.getBounds(), {padding:[60,60], maxZoom:17, duration:.6});
+  }
+  renderPanel(name);
+}
+
+/* ---------- panel ---------- */
+function initials(n){
+  const p = n.replace(/[^A-Za-z ].*/,'').trim().split(/\s+/);
+  return ((p[0]||'')[0]||'').toUpperCase() + ((p[1]||'')[0]||'').toUpperCase();
+}
+
+function renderPanel(name){
+  const amb = AMBASSADORS[name] || {};
+  const has = !!(amb.name && amb.name.trim());
+  const inner = document.getElementById('panelInner');
+
+  const avatar = amb.photo
+    ? `<div class="amb-avatar"><img src="${amb.photo}" alt=""></div>`
+    : `<div class="amb-avatar">${has ? initials(amb.name) : '?'}</div>`;
+
+  let contact = '';
+  if(has){
+    if(amb.email) contact += `<a href="mailto:${amb.email}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>${amb.email}</a>`;
+    if(amb.phone) contact += `<a href="tel:${amb.phone.replace(/[^0-9+]/g,'')}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.8 19.8 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.8 19.8 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.9.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg>${amb.phone}</a>`;
+  }
+
+  inner.innerHTML = `
+    <div class="hood-eyebrow">${isZone(name) ? 'Ambassador Zone' : 'Community Site'}</div>
+    <h2 class="hood-name">${pretty(name)}</h2>
+    <div class="rule"></div>
+    <div class="amb-card">
+      <div class="amb-head">
+        ${avatar}
+        <div>
+          <div class="amb-label">Community Ambassador</div>
+          <div class="amb-name${has ? '' : ' pending'}">${has ? amb.name : 'Ambassador needed'}</div>
+        </div>
+      </div>
+      ${has
+        ? (amb.blurb ? `<p class="amb-blurb">${amb.blurb}</p>` : '') +
+          (contact ? `<div class="amb-contact">${contact}</div>` : '')
+        : `<p class="amb-blurb">This zone is looking for an ambassador to help connect neighbors and host events. Interested?</p>`}
+    </div>
+    <a class="cta" href="${GET_INVOLVED_URL}" target="_blank" rel="noopener">
+      ${has ? 'Get involved in your zone' : 'Volunteer as ambassador'}
+    </a>
+    <a class="cta ghost" href="#" id="resetBtn">Back to full map</a>
+  `;
+  document.getElementById('resetBtn').addEventListener('click', e=>{
+    e.preventDefault();
+    clearSelection();
+    if(searchPin){ map.removeLayer(searchPin); searchPin = null; }
+    document.getElementById('panelInner').innerHTML = EMPTY_HTML;
+    map.flyToBounds(cityBounds, {padding:[20,20], duration:.6});
+  });
+}
+const EMPTY_HTML = document.getElementById('panelInner').innerHTML;
+
+/* ---------- search pin (troubleshooting aid) ---------- */
+function dropSearchPin(hit){
+  if(searchPin){ map.removeLayer(searchPin); searchPin = null; }
+  searchPin = L.circleMarker([hit.lat, hit.lng], {
+    radius:8, color:'#ffffff', weight:2.5,
+    fillColor:'#1f6feb', fillOpacity:1, pane:'markerPane'
+  }).addTo(map);
+  const conf = (hit.confidence != null) ? ` &middot; confidence ${Number(hit.confidence).toFixed(2)}` : '';
+  const typ  = hit.type ? ` &middot; ${hit.type}` : '';
+  searchPin.bindPopup(
+    `<b>${hit.source}</b>${typ}${conf}<br>${hit.lat.toFixed(6)}, ${hit.lng.toFixed(6)}`,
+    {className:'pin-popup'}
+  ).openPopup();
+}
+
+/* ---------- point-in-polygon (picks smallest matching polygon) ---------- */
+function findNeighborhood(lng, lat){
+  const pt = turf.point([lng, lat]);
+  let bestName = null, bestArea = Infinity;
+  for(const feat of NEIGHBORHOODS.features){
+    if(turf.booleanPointInPolygon(pt, feat)){
+      const bb = turf.bbox(feat);
+      const area = (bb[2]-bb[0]) * (bb[3]-bb[1]);
+      if(area < bestArea){ bestArea = area; bestName = feat.properties.name; }
+    }
+  }
+  return bestName;
+}
+
+/* ---------- address search ----------
+   Primary: Geoapify (rooftop-level, called directly via fetch/CORS).
+   Fallback: U.S. Census geocoder via JSONP, used if Geoapify is
+   unconfigured, errors, or returns nothing.                         */
+function flashMsg(text){
+  const m = document.getElementById('searchMsg');
+  m.textContent = text; m.classList.add('show');
+  clearTimeout(m._t); m._t = setTimeout(()=> m.classList.remove('show'), 4500);
+}
+
+// Normalize an address string for matching (uppercase, expand abbreviations).
+function normAddr(s){
+  return s.toUpperCase()
+    .replace(/\bSTREET\b/g,'ST').replace(/\bAVENUE\b/g,'AVE').replace(/\bDRIVE\b/g,'DR')
+    .replace(/\bROAD\b/g,'RD').replace(/\bLANE\b/g,'LN').replace(/\bCOURT\b/g,'CT')
+    .replace(/\bPLACE\b/g,'PL').replace(/\bBOULEVARD\b/g,'BLVD').replace(/\bTERRACE\b/g,'TER')
+    .replace(/\bCIRCLE\b/g,'CIR').replace(/\bNORTH\b/g,'N').replace(/\bSOUTH\b/g,'S')
+    .replace(/\bEAST\b/g,'E').replace(/\bWEST\b/g,'W')
+    .replace(/[.,]/g,' ').replace(/\s+/g,' ').trim();
+}
+// Count shared tokens between two normalized street strings.
+function streetScore(a, b){
+  const tb = new Set(b.split(' ').filter(Boolean));
+  let n = 0; for(const t of a.split(' ').filter(Boolean)) if(tb.has(t)) n++;
+  return n;
+}
+
+// Primary geocoder: VGIN authoritative Falls Church address points (FIPS 51610),
+// queried live (CORS-enabled). Matches house number + street, ignores unit.
+const VGIN_URL = 'https://vginmaps.vdem.virginia.gov/arcgis/rest/services/VA_Base_Layers/VA_Address_Points/MapServer/0/query';
+async function geocodeVGIN(address){
+  const norm = normAddr(address);
+  const m = norm.match(/^(\d+)\s+(.+)/);
+  if(!m) return null;                       // need a house number
+  const num = m[1];                          // digits only (safe in query)
+  const street = m[2]
+    .replace(/\bFALLS CHURCH\b.*$/,'').replace(/\b(VA|VIRGINIA)\b.*$/,'')
+    .replace(/\d{5}.*$/,'').replace(/\b(UNIT|APT|STE|SUITE|#).*$/,'').trim();
+  const params = new URLSearchParams({
+    where: `FIPS='51610' AND FULLADDR LIKE '${num} %'`,
+    outFields: 'FULLADDR,LAT,LONG', outSR: '4326', returnGeometry: 'true', f: 'json'
+  });
+  const res = await fetch(VGIN_URL + '?' + params);
+  if(!res.ok) throw new Error('vgin http ' + res.status);
+  const data = await res.json();
+  const feats = data.features || [];
+  if(!feats.length) return null;
+  let best = null, bestScore = 0;
+  for(const f of feats){
+    const faStreet = normAddr(f.attributes.FULLADDR).replace(/^\d+\s+/,'').replace(/\b(UNIT|APT|STE).*$/,'').trim();
+    const sc = streetScore(street, faStreet);
+    if(sc > bestScore){ bestScore = sc; best = f; }
+  }
+  if(!best || bestScore < 1) return null;    // street didn't match — let fallback try
+  const g = best.geometry;
+  return {lat: g.y, lng: g.x, source: 'VGIN', type: 'building'};
+}
+
+function geocodeJSONP(address){
+  return new Promise((resolve, reject)=>{
+    const cb = 'fcfgeo_' + Date.now();
+    const timer = setTimeout(()=>{ cleanup(); reject(new Error('timeout')); }, 12000);
+    function cleanup(){ delete window[cb]; s.parentNode && s.parentNode.removeChild(s); clearTimeout(timer); }
+    window[cb] = data =>{ cleanup(); resolve(data); };
+    const params = new URLSearchParams({address, benchmark:'Public_AR_Current', format:'jsonp', callback:cb});
+    const s = document.createElement('script');
+    s.src = 'https://geocoding.geo.census.gov/geocoder/locations/onelineaddress?' + params;
+    s.onerror = ()=>{ cleanup(); reject(new Error('network')); };
+    document.body.appendChild(s);
+  });
+}
+
+async function geocodeCensus(address){
+  const data = await geocodeJSONP(address);
+  const m = (data && data.result && data.result.addressMatches) || [];
+  if(!m.length) return null;
+  return {lat: m[0].coordinates.y, lng: m[0].coordinates.x, source: 'census'};
+}
+
+// Try VGIN (authoritative) first, then fall back to Census. Never throws.
+async function geocode(address){
+  try{
+    const v = await geocodeVGIN(address);
+    if(v) return v;
+  } catch(err){ /* fall through to Census */ }
+  try{
+    return await geocodeCensus(address);
+  } catch(err){ return null; }
+}
+
+document.getElementById('searchForm').addEventListener('submit', async e=>{
+  e.preventDefault();
+  let q = document.getElementById('addr').value.trim();
+  if(!q) return;
+  if(!/falls church|22046|22042|22043|,\s*va/i.test(q)) q += ', Falls Church, VA';
+  flashMsg('Looking up address\u2026');
+  const hit = await geocode(q);
+  if(!hit){ flashMsg('Address not found \u2014 try adding a zip code, or click a zone.'); return; }
+  dropSearchPin(hit);
+  const name = findNeighborhood(hit.lng, hit.lat);
+  if(!name){
+    map.flyTo([hit.lat, hit.lng], 16, {duration:.6});
+    flashMsg('That address appears to be outside the mapped zones.');
+    return;
+  }
+  document.getElementById('searchMsg').classList.remove('show');
+  select(name, true);
+});
+
+/* ---------- "Use my location" (browser geolocation) ---------- */
+document.getElementById('locBtn').addEventListener('click', ()=>{
+  const btn = document.getElementById('locBtn');
+  if(!navigator.geolocation){ flashMsg('Location isn\u2019t available on this device \u2014 type your address instead.'); return; }
+  btn.classList.add('busy');
+  flashMsg('Finding your location\u2026');
+  navigator.geolocation.getCurrentPosition(
+    pos => {
+      btn.classList.remove('busy');
+      const hit = {lat: pos.coords.latitude, lng: pos.coords.longitude, source:'your location', type:'GPS'};
+      dropSearchPin(hit);
+      const name = findNeighborhood(hit.lng, hit.lat);
+      if(!name){
+        map.flyTo([hit.lat, hit.lng], 15, {duration:.6});
+        flashMsg('You don\u2019t appear to be inside a mapped zone right now.');
+        return;
+      }
+      document.getElementById('searchMsg').classList.remove('show');
+      select(name, true);
+    },
+    err => {
+      btn.classList.remove('busy');
+      flashMsg(err.code === 1
+        ? 'Location permission denied \u2014 type your address instead.'
+        : 'Couldn\u2019t get your location \u2014 type your address instead.');
+    },
+    { enableHighAccuracy:true, timeout:10000, maximumAge:60000 }
+  );
+});
+</script>
+</body>
+</html>
