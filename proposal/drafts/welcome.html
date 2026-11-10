@@ -1,0 +1,167 @@
+<!--
+  FALLS CHURCH FORWARD — "Welcome to Falls Church" page (DRAFT)
+
+  WHAT THIS IS
+  The Welcome page with the Local Tips page folded in. It replaces two pages:
+    /welcome/  (this one stays)
+    /tips/     (retire; redirect to /welcome/#start-here)
+
+  WHAT CHANGED vs. the current /welcome/
+  - The full ambassador grid and the sign-up form are gone from this page.
+    They now live in one place only: /community-ambassadors/.
+    A short "Meet your ambassador" strip links there instead.
+  - The seven tips from /tips/ are on this page under "Start here".
+  - The Directory and Word on the Street tiles both point at /community-directory/
+    (the second one opens its "Newsletters, blogs & forums" tab).
+  - Tip text is unchanged except two links: "local groups to join" now points at
+    /community-directory/, and "leaving the leaves" links to /leaves/.
+
+  HOW TO USE
+  1. Pages -> Welcome to Falls Church -> replace the Custom HTML block with this whole file.
+  2. Update / Publish.
+  3. Add the redirect  /tips/  ->  /welcome/#start-here  (Tools -> Redirection), then trash the Tips page.
+
+  The four faces in the strip are decoration. Any four will do, and they do not
+  need to be kept in sync with the ambassador list.
+-->
+
+<style>
+.fcf-welcome{--fc-forest:#054A3E;--fc-pine:#117158;--fc-emerald:#2AA47A;--fc-gold:#E3A93B;--fc-paper:#F7F5EF;--fc-mist:#E6EFE8;--fc-soft:#41544D;--fc-line:rgba(5,74,62,.14)}
+.fcf-welcome .w-lead{font-size:1.12rem;line-height:1.7;color:var(--fc-soft);max-width:46rem;margin:0}
+.fcf-welcome .w-lead strong{color:var(--fc-forest)}
+.fcf-welcome a{color:var(--fc-pine);text-decoration:underline;text-underline-offset:2px}
+.fcf-welcome a:hover{color:var(--fc-emerald)}
+.fcf-welcome h2{font-family:"Bricolage Grotesque",system-ui,sans-serif;font-weight:700;color:var(--fc-forest);font-size:clamp(1.5rem,1.3rem + 1vw,2rem);margin:2.8rem 0 .6rem;scroll-margin-top:6rem}
+.fcf-welcome p{color:var(--fc-soft);line-height:1.7}
+
+/* three "everything you need" tiles */
+.fcf-welcome .w-tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:1.1rem;margin:1.8rem 0 0;padding:0;list-style:none}
+.fcf-welcome .w-tiles li{margin:0}
+.fcf-welcome .w-tile{display:flex;flex-direction:column;height:100%;background:var(--fc-paper);border:1px solid var(--fc-line);border-radius:16px;overflow:hidden;text-decoration:none;box-shadow:0 2px 10px rgba(6,52,44,.06);transition:transform .25s ease,box-shadow .25s ease}
+.fcf-welcome .w-tile:hover{transform:translateY(-4px);box-shadow:0 18px 40px -22px rgba(6,52,44,.4)}
+.fcf-welcome .w-tile-img{background:#fff;height:150px;display:flex;align-items:center;justify-content:center;padding:.7rem;border-bottom:1px solid var(--fc-line)}
+.fcf-welcome .w-tile-img img{max-width:100%;max-height:100%;width:auto;height:auto;object-fit:contain;margin:0;border:0;border-radius:6px;box-shadow:none}
+.fcf-welcome .w-tile-body{padding:1rem 1.1rem 1.2rem}
+.fcf-welcome .w-tile h3{font-family:"Bricolage Grotesque",system-ui,sans-serif;font-weight:700;color:var(--fc-forest);font-size:1.15rem;margin:0 0 .25rem}
+.fcf-welcome .w-tile p{font-size:.9rem;color:var(--fc-soft);margin:0}
+
+/* "meet your ambassador" strip (replaces the duplicated grid) */
+.fcf-welcome .w-amb{display:flex;align-items:center;gap:1rem 1.2rem;flex-wrap:wrap;margin:1.6rem 0 0;background:var(--fc-mist);border-radius:16px;padding:1.15rem 1.3rem}
+.fcf-welcome .w-amb-faces{display:flex;flex:0 0 auto;padding-left:10px}
+.fcf-welcome .w-amb-faces img{width:52px;height:52px;border-radius:50%;object-fit:cover;display:block;margin:0 0 0 -10px;border:3px solid var(--fc-mist);box-shadow:none}
+.fcf-welcome .w-amb-text{flex:1 1 15rem;min-width:0}
+.fcf-welcome .w-amb-text h2{font-size:1.25rem;margin:0 0 .2rem}
+.fcf-welcome .w-amb-text p{font-size:.98rem;line-height:1.5;margin:0}
+.fcf-welcome .w-btn{display:inline-flex;align-items:center;flex:0 0 auto;background:var(--fc-emerald);color:#04231b;font-weight:700;font-size:1rem;line-height:1;text-decoration:none;border-radius:100px;padding:.8em 1.35em;white-space:nowrap;transition:background .2s ease}
+.fcf-welcome .w-btn:hover{background:#39C089;color:#04231b}
+
+/* start-here tips (moved in from the Tips page) */
+.fcf-welcome .tips-intro{max-width:46rem;margin:0}
+.fcf-welcome .tips-list{display:flex;flex-direction:column;gap:1.4rem;margin:1.4rem 0 0}
+.fcf-welcome .tip-item{display:flex;gap:1.3rem;align-items:flex-start;background:var(--fc-paper);border:1px solid var(--fc-line);border-radius:16px;padding:1.2rem 1.4rem}
+.fcf-welcome .tip-icon{flex:0 0 84px;width:84px}
+.fcf-welcome .tip-icon img{width:100%;height:auto;display:block;margin:0;border:0;border-radius:10px;box-shadow:none}
+.fcf-welcome .tip-body{flex:1;min-width:0}
+.fcf-welcome .tip-body h3{font-family:"Bricolage Grotesque",system-ui,sans-serif;font-weight:700;color:var(--fc-forest);font-size:1.2rem;margin:0 0 .35rem}
+.fcf-welcome .tip-body p{color:var(--fc-soft);line-height:1.65;margin:0}
+
+@media(max-width:620px){
+  .fcf-welcome .w-tiles{grid-template-columns:1fr}
+  .fcf-welcome .tip-item{flex-direction:column;gap:.8rem}
+  .fcf-welcome .tip-icon{flex:none;width:64px}
+}
+</style>
+
+<div class="fcf-welcome">
+  <p class="w-lead"><strong>Everything you need in one “little” place!</strong> The best things about The Little City come from people like you. We’re so glad you’re here. Now get involved!</p>
+
+  <ul class="w-tiles">
+    <li><a class="w-tile" href="#start-here">
+      <div class="w-tile-img"><img src="/wp-content/uploads/fcf-pages/f6rcb7iqvemt6n3c.png" alt="" loading="lazy"></div>
+      <div class="w-tile-body"><h3>Tips</h3><p>Things To Get You Started</p></div>
+    </a></li>
+    <li><a class="w-tile" href="/community-directory/">
+      <div class="w-tile-img"><img src="/wp-content/uploads/fcf-pages/svlb9svo36nlzgdx.png" alt="" loading="lazy"></div>
+      <div class="w-tile-body"><h3>Join the Community</h3><p>Directory</p></div>
+    </a></li>
+    <li><a class="w-tile" href="/community-directory/#word-on-the-street">
+      <div class="w-tile-img"><img src="/wp-content/uploads/fcf-pages/t9wd70s2sw8rxknn.png" alt="" loading="lazy"></div>
+      <div class="w-tile-body"><h3>Word on the Street</h3><p>Newsletters/Blogs/Forums</p></div>
+    </a></li>
+  </ul>
+
+  <div class="w-amb">
+    <div class="w-amb-faces" aria-hidden="true">
+      <img src="/wp-content/uploads/fcf-pages/cr4i1qr41vawqlsx.jpg" alt="" loading="lazy">
+      <img src="/wp-content/uploads/fcf-pages/gsgrczwqrz88t7a3.jpg" alt="" loading="lazy">
+      <img src="/wp-content/uploads/fcf-pages/j9ng944opcigab1d.jpg" alt="" loading="lazy">
+      <img src="/wp-content/uploads/fcf-pages/fj5paltq63iwke1f.jpg" alt="" loading="lazy">
+    </div>
+    <div class="w-amb-text">
+      <h2>Meet your ambassador</h2>
+      <p>Community ambassadors are neighbors who want to welcome anyone new to the Little City. Ask them about anything.</p>
+    </div>
+    <a class="w-btn" href="/community-ambassadors/">Meet the ambassadors</a>
+  </div>
+
+  <h2 id="start-here">Start here</h2>
+  <p class="tips-intro">A few things to get you started, whether you moved in last week or ten years ago.</p>
+
+  <div class="tips-list">
+    <div class="tip-item">
+      <div class="tip-icon"><img src="/wp-content/uploads/fcf-pages/tips-checklist.png" alt="" loading="lazy"></div>
+      <div class="tip-body">
+        <h3>New Resident Checklist</h3>
+        <p>First things first, take a look at the city’s <a href="https://www.fallschurchva.gov/1256/New-Resident-Checklist"><strong>new resident checklist</strong></a> (also helpful for not so new residents!). This checklist will make sure you’ve covered many of the essentials like when trash day is (Wednesday!), how to get your utilities up and running, how to register your car, important phone numbers, the locations of civic institutions like city hall, the community center, the library and more.</p>
+      </div>
+    </div>
+
+    <div class="tip-item">
+      <div class="tip-icon"><img src="/wp-content/uploads/fcf-pages/tips-ballot.png" alt="" loading="lazy"></div>
+      <div class="tip-body">
+        <h3>Cast your ballot</h3>
+        <p>Update your voter registration status or <strong>register to vote <a href="https://www.fallschurchva.gov/141/Register-to-Vote">here</a></strong>. Your vote makes a huge impact on making our community a great place to live. Help choose who represents us locally, how our government funding and resources are allocated, and what policies will help make the City of Falls Church a more welcoming place. Your vote can really make a difference!</p>
+      </div>
+    </div>
+
+    <div class="tip-item">
+      <div class="tip-icon"><img src="/wp-content/uploads/fcf-pages/tips-news.png" alt="" loading="lazy"></div>
+      <div class="tip-body">
+        <h3>Get Focused</h3>
+        <p>Be in the know and subscribe to <a href="https://www.fallschurchva.gov/Focus"><strong>Focus on Falls Church</strong></a>. A <strong>weekly Newsletter</strong> sent by the city that provides updates on City-run programs and initiatives.</p>
+      </div>
+    </div>
+
+    <div class="tip-item">
+      <div class="tip-icon"><img src="/wp-content/uploads/fcf-pages/tips-city101.png" alt="" loading="lazy"></div>
+      <div class="tip-body">
+        <h3>City 101</h3>
+        <p>Have you ever wondered what <a href="https://www.fallschurchva.gov/473/Current-Development-Projects">city projects are coming online</a> (Hello Whole Foods!), <a href="https://www.fallschurchva.gov/2408/History-Panels">how the city came to be</a>, how to <a href="https://www.fallschurchva.gov/2233/City-Boards-and-Commissions">advocate for things that matter to you</a>, or how to <a href="https://fallschurchva.gov/528/Facility-Rentals">reserve a picnic shelter or community space for an event</a>? Take some time to explore the <a href="https://www.fallschurchva.gov/27/Government"><strong>city’s website</strong></a> for all info related to navigating our local government. And if you can’t find an answer online, you can always walk over to City Hall.</p>
+      </div>
+    </div>
+
+    <div class="tip-item">
+      <div class="tip-icon"><img src="/wp-content/uploads/fcf-pages/tips-explore.png" alt="" loading="lazy"></div>
+      <div class="tip-body">
+        <h3>Explore</h3>
+        <p>At just 2.2 sq miles, it’s easy to get around town on foot, <a href="https://fallschurchva.gov/1119/Getting-Around-Falls-Church">bike, or bus</a> (or join the weekly student <a href="https://bikefallschurch.org/fccps-bike-bus">Bike Bus</a>!). Explore your neighborhood, <a href="https://fallschurchva.gov/511/Parks">local parks</a>, <a href="https://visitfallschurch.com/dine-shop/restaurants/">good eats</a>, and attend <a href="https://www.fallschurchva.gov/500/Events">local events and celebrations</a>. With 2 metro stops (<a href="https://www.wmata.com/rider-guide/stations/east-falls-church.cfm">East Falls Church</a> and <a href="https://www.wmata.com/rider-guide/stations/west-falls-church.cfm">West Falls Church</a>) at your fingertips, you can also head out and explore fun things to do beyond our little city and into Washington DC, Maryland, and other parts of Virginia. <a href="https://visitfallschurch.com"><strong>There is so much to do!</strong></a></p>
+      </div>
+    </div>
+
+    <div class="tip-item">
+      <div class="tip-icon"><img src="/wp-content/uploads/fcf-pages/tips-green.png" alt="" loading="lazy"></div>
+      <div class="tip-body">
+        <h3>Think Green</h3>
+        <p>Thinking about upgrading some of your home systems like HVAC and appliances? <strong>Go Electric!</strong> Connect with <a href="https://goelectricdmv.org/">GoElectricDMV</a> and brainstorm your next electrification project with a community volunteer from Rewiring America. You can also sign up for the city’s <a href="https://www.fallschurchva.gov/Composting">composting</a> program, <a href="https://www.fallschurchva.gov/234/Rain-Barrel-Workshops">apply for a rain barrel</a>, <a href="https://www.fallschurchva.gov/533/Green-Power">explore solar,</a> and understand the impacts of <a href="/leaves/">leaving the leaves</a>. Need more ideas? Check out the city’s <a href="https://www.fallschurchva.gov/2256/One-Stop-Shop-for-Community-Energy-Actio"><strong>One-Stop Shop for Community Energy Action</strong></a>.</p>
+      </div>
+    </div>
+
+    <div class="tip-item">
+      <div class="tip-icon"><img src="/wp-content/uploads/fcf-pages/tips-invited.png" alt="" loading="lazy"></div>
+      <div class="tip-body">
+        <h3>You’re Invited!</h3>
+        <p>If you just moved here (or have been here for a while) and are looking to connect and find your people, a simple way to do so is to just show up to something. We’ve got a variety of <a href="https://www.fallschurchva.gov/1295/Classes">classes</a>, <a href="https://www.fallschurchva.gov/352/Volunteer-Internship-Opportunities">volunteer</a> opportunities, and <a href="/community-directory/"><strong>local groups to join</strong></a>. From comic book clubs, to bike buses, garden clubs and beyond—there’s something for everyone. We hope you’ll join us!</p>
+      </div>
+    </div>
+  </div>
+</div>
