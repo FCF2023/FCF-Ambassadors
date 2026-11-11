@@ -1,6 +1,6 @@
 # FCF website: welcome and ambassador page consolidation
 
-First prepared 10 November 2026. Updated 11 November 2026: decisions recorded and the page changes applied to the live site.
+First prepared 10 November 2026. Updated 11 November 2026: decisions recorded, and the page changes and the "New here?" menu applied to the live site.
 
 ## Status
 
@@ -10,16 +10,17 @@ First prepared 10 November 2026. Updated 11 November 2026: decisions recorded an
 | Ambassador space (hub page, groups.io) | On hold pending discussion | Nothing installed. Notes kept in section 7. |
 | Ambassador map | Keep off the site until ready. Remove the GitHub copy. | Finder page in Draft. `index.html` deleted on this branch; still on GitHub Pages until merged. |
 | Subscribe page | Rename to RSS Feeds | **Live** 11 Nov. |
-| "New here?" menu | Try it | Preview built (section 3). Can go live from the WordPress menu once the Mission question is settled. |
+| "New here?" menu | Put it live, with Mission moved under About | **Live** 11 Nov. One CSS rule still to paste (section 3). |
 | `/farmers-market/` | Fold into `/farmers-market-expansion/` | **Live** 11 Nov. |
-| Meeting Finder | Roll into Meeting Search | Needs a decision and a theme edit (section 6). |
+| Meeting Finder | Leave it as it is | No change. Nothing links to it (section 6). |
 
-What was applied on 11 November, through the WordPress REST API with an Administrator application password:
+What was applied on 11 November, through the WordPress REST API:
 
 - Content replaced on `/welcome/`, `/community-ambassadors/` and `/community-directory/`.
 - `/subscribe/` retitled "RSS Feeds".
 - Four redirects added in Redirection (group "Redirections", 301).
 - Four pages set to Draft: Local Tips, Newsletters/Blogs/Forums, Find Your Ambassador, Farmers Market.
+- Primary menu: "New here?" added with three children, Mission moved under About, page cache cleared.
 
 To undo any page, open it in WordPress and use Revisions, or set a Draft page back to Published and delete its redirect under Tools → Redirection. The site now has 23 published pages, down from 27.
 
@@ -71,47 +72,36 @@ All 27 pages and 57 posts were scanned for links to the retiring addresses. The 
 
 ## 3. "New here?" menu
 
-Previews, rendered with the live theme stylesheet:
+Live since 11 November 2026. The header is an ordinary WordPress menu ("Primary Menu 20260803", Appearance → Menus), so this was a menu change, not a theme edit.
 
-- Desktop: [`previews/new-here-desktop.png`](previews/new-here-desktop.png)
-- Desktop after scrolling: [`previews/new-here-desktop-scrolled.png`](previews/new-here-desktop-scrolled.png)
-- Phone menu: [`previews/new-here-mobile.png`](previews/new-here-mobile.png)
+| Top row | Under it |
+|---|---|
+| New here? | Welcome guide, Community Ambassadors, Community Directory |
+| Projects | |
+| City Meetings | |
+| Ask the Archive | |
+| News | |
+| Calendar | |
+| About | Mission, Vision, Things We Do, Who We Are, FCF Gear |
+| Get updates (button) | |
 
-What the test showed:
+Checked on the live site: the top row sits on one line at 1280px on the homepage and three inner pages, both dropdowns open, the phone menu shows both groups, and Mission under About lands on the homepage's mission section from an inner page.
 
-- **It has to take Mission's place.** Added as a ninth item, the menu wraps onto two lines at every desktop width. Swapped for Mission, it fits. The homepage keeps its mission section, About → Vision covers the same ground, and the footer link to Mission stays.
-- **Move the hamburger breakpoint from 1080px to 1140px.** Today's menu wraps between 1081 and 1119px wide. With "New here?" it wraps between 1081 and about 1138px. This rule removes the wrap entirely (tested: phone-style menu up to 1140px, one line from 1141px). It can be pasted into Appearance → Customize → Additional CSS, so no theme file needs editing:
+To undo or adjust: Appearance → Menus. Drag Mission back to the top level, or delete "New here?" and its three items.
 
-  ```css
-  @media (max-width:1140px){
-    .nav .navlink, .nav .has-dropdown{display:none}
-    .hdr-cta{display:none}
-    .menu-btn{display:block}
-  }
-  ```
-- **It is a menu change, not a theme edit.** The header is an ordinary WordPress menu ("Primary Menu 20260803", Appearance → Menus). About is a parent item with four children, and "New here?" would be built the same way: a parent linking to `/welcome/` with three children. It takes a minute to add and a minute to undo.
-- **Mission could move instead of going.** Making it the first item under About keeps it reachable from the header.
+**Why Mission moved.** Added as a ninth item, the menu wraps onto two lines at every desktop width. The top row holds seven items plus the button.
 
-For reference, this is the markup the theme produces for a dropdown, which is what the previews were built from:
+**Still to do: the hamburger breakpoint.** Before this change the menu wrapped onto two lines between 1081 and 1119px wide. Now it wraps between 1081 and about 1138px. This rule switches those widths to the phone-style menu and removes the wrap (tested against the live stylesheet: phone-style menu up to 1140px, one line from 1141px). Paste it into Appearance → Customize → Additional CSS:
 
-```html
-<!-- desktop, in place of the Mission link -->
-<div class="has-dropdown"><a class="navlink" href="/welcome/" aria-haspopup="true">New here?[same chevron svg as About]</a>
-  <div class="dropdown" role="menu">
-    <a role="menuitem" href="/welcome/">Welcome guide</a>
-    <a role="menuitem" href="/community-ambassadors/">Community Ambassadors</a>
-    <a role="menuitem" href="/community-directory/">Community Directory</a>
-  </div>
-</div>
-
-<!-- phone menu, in place of the Mission link -->
-<div class="mm-group"><span class="mm-group-label">New here?</span>
-  <a href="/welcome/">Welcome guide [arrow]</a>
-  <a href="/community-ambassadors/">Community Ambassadors [arrow]</a>
-  <a href="/community-directory/">Community Directory [arrow]</a>
-</div>
+```css
+@media (max-width:1140px){
+  .nav .navlink, .nav .has-dropdown{display:none}
+  .hdr-cta{display:none}
+  .menu-btn{display:block}
+}
 ```
 
+The previews made before the change are kept in [`previews/`](previews/).
 
 ---
 
@@ -127,11 +117,11 @@ Retitle the page from "Subscribe" to "RSS Feeds". The address `/subscribe/` and 
 
 ---
 
-## 6. Meeting Finder into Meeting Search
+## 6. Meeting Finder
 
-No page or post links to Meeting Finder, and it is `noindex`, so there are no links to update.
+**Decision (11 November): leave it as it is.** With Meeting Search and Ask the Archive there are already enough search tools, and no page, post or menu links to Meeting Finder. It is also `noindex`. No change was made.
 
-It is not quite the same search with fewer options. Both use the same index and the same precision rules, but they answer differently. Tested with "Founders Row":
+For the record, this is how it differs from Meeting Search (tested with "Founders Row"), in case it is ever revisited:
 
 | | Meeting Search | Meeting Finder |
 |---|---|---|
@@ -140,11 +130,7 @@ It is not quite the same search with fewer options. Both use the same index and 
 | "Founders Row" | 136 results (349 with transcripts on) | 222 meetings: 134 discussed it, 88 mentioned it in passing |
 | Extras | | Links to the City video and official minutes on each row |
 
-So retiring Finder outright loses three things: one row per meeting, the whole list at once, and the discussed / in passing split.
-
-**Recommended:** add a fourth view to Meeting Search, "Every meeting, by year", beside Relevance / Newest / Oldest. It would call the Finder's existing code (`inc/fcf-ask-enumerate.php`) and respect Search's civic-body and date filters, which Finder cannot do today. Then send `/meeting-finder/` to Meeting Search and put the Finder page in Draft. This is a theme edit for a DreamHost session.
-
-**Quick alternative:** redirect `/meeting-finder/` to Meeting Search with transcripts on and newest first, and accept losing those three things. This can be done at once with the other redirects.
+Setting the Meeting Finder page to Draft would remove it completely.
 
 ---
 
