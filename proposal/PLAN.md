@@ -1,20 +1,27 @@
 # FCF website: welcome and ambassador page consolidation
 
-First prepared 10 November 2026. Updated 11 November 2026 with Pat's decisions.
+First prepared 10 November 2026. Updated 11 November 2026: decisions recorded and the page changes applied to the live site.
 
 ## Status
 
 | Item | Decision | Status |
 |---|---|---|
-| Welcome, ambassadors and directory pages | Consolidate, with redirects. Belén is in Virginia Village. | Drafts final. Ready to apply. |
+| Welcome, ambassadors and directory pages | Consolidate, with redirects. Belén is in Virginia Village. | **Live** 11 Nov. Checked at desktop and phone widths. |
 | Ambassador space (hub page, groups.io) | On hold pending discussion | Nothing installed. Notes kept in section 7. |
-| Ambassador map | Keep off the site until ready. Remove the GitHub copy. | `index.html` deleted on this branch. Finder page to go to Draft. |
-| Subscribe page | Rename to RSS Feeds | Ready to apply. |
-| "New here?" menu | Try it | Preview built (section 3). Needs a theme edit. |
-| `/farmers-market/` | Fold into `/farmers-market-expansion/` | Ready to apply. |
+| Ambassador map | Keep off the site until ready. Remove the GitHub copy. | Finder page in Draft. `index.html` deleted on this branch; still on GitHub Pages until merged. |
+| Subscribe page | Rename to RSS Feeds | **Live** 11 Nov. |
+| "New here?" menu | Try it | Preview built (section 3). Can go live from the WordPress menu once the Mission question is settled. |
+| `/farmers-market/` | Fold into `/farmers-market-expansion/` | **Live** 11 Nov. |
 | Meeting Finder | Roll into Meeting Search | Needs a decision and a theme edit (section 6). |
 
-"Ready to apply" items are page edits and redirects that go through WordPress itself. The two theme edits need a DreamHost session, because the theme files are only on the server.
+What was applied on 11 November, through the WordPress REST API with an Administrator application password:
+
+- Content replaced on `/welcome/`, `/community-ambassadors/` and `/community-directory/`.
+- `/subscribe/` retitled "RSS Feeds".
+- Four redirects added in Redirection (group "Redirections", 301).
+- Four pages set to Draft: Local Tips, Newsletters/Blogs/Forums, Find Your Ambassador, Farmers Market.
+
+To undo any page, open it in WordPress and use Revisions, or set a Draft page back to Published and delete its redirect under Tools → Redirection. The site now has 23 published pages, down from 27.
 
 ---
 
@@ -40,7 +47,7 @@ Surviving pages keep their addresses, so printed links and QR codes keep working
 | `/ambassador-finder/` | `/community-ambassadors/#find` |
 | `/farmers-market/` | `/farmers-market-expansion/` |
 
-The four old pages go to Draft, not Trash, so they can be brought back.
+The four old pages are in Draft, not Trash, so they can be brought back. All four redirects were checked with and without the trailing slash, and the retired pages are gone from the sitemap.
 
 ### Links checked
 
@@ -56,7 +63,7 @@ All 27 pages and 57 posts were scanned for links to the retiring addresses. The 
 
 ## 2. Ambassador map
 
-- **`/ambassador-finder/`** goes to Draft and redirects to the ambassadors page. It is not linked from the homepage or the menu.
+- **`/ambassador-finder/`** is in Draft and redirects to the ambassadors page. It is not linked from the homepage or the menu.
 - **The GitHub copy** (`index.html` in this repository) had the same zones, contacts and code as the live map, with older colors and fonts. It is deleted on this branch. It was also being served publicly by GitHub Pages at `fcf2023.github.io/FCF-Ambassadors/`, placeholder contacts included. That copy goes away when this branch is merged to `main`. Turning off Pages in the repository settings is the cleaner finish.
 - **The live map** is a plain file on the server at `/ambassador-map/`, not a WordPress page. Putting the Finder page in Draft unlinks it, but anyone with the address can still open it and see the placeholder contacts. To take it fully offline, move the `ambassador-map` folder out of `~/fallschurchforward.org` (FileZilla or a DreamHost session). When it is ready, it can be switched on inside the Community Ambassadors page: the draft has a marked slot for it.
 
@@ -73,9 +80,19 @@ Previews, rendered with the live theme stylesheet:
 What the test showed:
 
 - **It has to take Mission's place.** Added as a ninth item, the menu wraps onto two lines at every desktop width. Swapped for Mission, it fits. The homepage keeps its mission section, About → Vision covers the same ground, and the footer link to Mission stays.
-- **Move the hamburger breakpoint from 1080px to 1140px.** Today's menu wraps between 1081 and 1119px wide. With "New here?" it wraps between 1081 and 1139px. Changing the two `max-width:1080px` menu rules in `style.css` to 1140px removes the wrap entirely.
+- **Move the hamburger breakpoint from 1080px to 1140px.** Today's menu wraps between 1081 and 1119px wide. With "New here?" it wraps between 1081 and about 1138px. This rule removes the wrap entirely (tested: phone-style menu up to 1140px, one line from 1141px). It can be pasted into Appearance → Customize → Additional CSS, so no theme file needs editing:
 
-The dropdown reuses the About dropdown's markup exactly:
+  ```css
+  @media (max-width:1140px){
+    .nav .navlink, .nav .has-dropdown{display:none}
+    .hdr-cta{display:none}
+    .menu-btn{display:block}
+  }
+  ```
+- **It is a menu change, not a theme edit.** The header is an ordinary WordPress menu ("Primary Menu 20260803", Appearance → Menus). About is a parent item with four children, and "New here?" would be built the same way: a parent linking to `/welcome/` with three children. It takes a minute to add and a minute to undo.
+- **Mission could move instead of going.** Making it the first item under About keeps it reachable from the header.
+
+For reference, this is the markup the theme produces for a dropdown, which is what the previews were built from:
 
 ```html
 <!-- desktop, in place of the Mission link -->
@@ -95,7 +112,6 @@ The dropdown reuses the About dropdown's markup exactly:
 </div>
 ```
 
-This is a theme edit (wherever the menu is built, most likely `header.php`), so it belongs in a DreamHost session: back up the file, make the change, bump the version strings.
 
 ---
 
@@ -107,7 +123,7 @@ Retitle the page from "Subscribe" to "RSS Feeds". The address `/subscribe/` and 
 
 ## 5. Farmers market
 
-`/farmers-market/` is the older copy. Its sign-up area still shows the placeholder text "[ Sign-up form goes here — reconnect with your WordPress form ]", and its share buttons already point at `/farmers-market-expansion/`. There is nothing on it to carry over. It goes to Draft and redirects to `/farmers-market-expansion/`. The petition page and its Apps Script endpoint are not touched.
+`/farmers-market/` was the older copy. Its sign-up area still showed the placeholder text "[ Sign-up form goes here — reconnect with your WordPress form ]", and its share buttons already point at `/farmers-market-expansion/`. There is nothing on it to carry over. It is now in Draft and redirects to `/farmers-market-expansion/`. The petition page and its Apps Script endpoint were not touched.
 
 ---
 
