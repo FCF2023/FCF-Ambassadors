@@ -9,6 +9,7 @@ First prepared 10 November 2026. Updated 11 November 2026: decisions recorded, a
 | Welcome, ambassadors and directory pages | Consolidate, with redirects. Belén is in Virginia Village. | **Live** 11 Nov. Checked at desktop and phone widths. |
 | Ambassador space (hub page, groups.io) | On hold pending discussion | Nothing installed. Notes kept in section 7. |
 | Ambassador map | Keep off the site until ready. Remove the GitHub copy. | Finder page in Draft. `index.html` deleted on this branch; still on GitHub Pages until merged. |
+| Community Directory width | Asked 11 Nov: let the lists use more of a wide screen | Draft updated and tested. **Not yet live**, waiting for a go. |
 | Subscribe page | Rename to RSS Feeds | **Live** 11 Nov. |
 | "New here?" menu | Put it live, with Mission moved under About | **Live** 11 Nov. One CSS rule still to paste (section 3). |
 | `/farmers-market/` | Fold into `/farmers-market-expansion/` | **Live** 11 Nov. |
@@ -38,6 +39,20 @@ Seven pages become three evergreen pages plus the seasonal Good Neighbor Day pag
 | `/good-neighbor-day/` | | Unchanged |
 
 Surviving pages keep their addresses, so printed links and QR codes keep working.
+
+### Wider Community Directory (ready, not yet live)
+
+The directory draft now uses the site's full content width, the same edges as the header, instead of the narrow reading column. Tested against the live theme stylesheet:
+
+| Window width | List width |
+|---|---|
+| 1280px and wider | 1120px (736px today) |
+| 1100px | 1020px |
+| 900px | 828px |
+| 768px | 707px |
+| Phone (390px) | 353px (same as today) |
+
+It is one CSS rule in [`drafts/community-directory.html`](drafts/community-directory.html), the other pages are unaffected, and deleting that rule goes back to the narrow column. Older browsers that do not understand the rule simply keep the narrow column.
 
 ### Redirects
 
