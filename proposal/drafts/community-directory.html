@@ -20,6 +20,11 @@
 
 <style>
 .fcf-dir{--fc-forest:#054A3E;--fc-pine:#117158;--fc-emerald:#2AA47A;--fc-paper:#F7F5EF;--fc-soft:#41544D;--fc-line:rgba(5,74,62,.14);--fc-line-strong:rgba(5,74,62,.24)}
+/* This page uses the site's full content width (the same edges as the header)
+   instead of the narrow reading column, so the lists get room on wide screens.
+   The width follows the window, so it narrows by itself on smaller screens.
+   Delete the next line to go back to the narrow column. */
+.prose:has(.fcf-dir){max-width:none}
 .fcf-dir .dir-lead{font-size:1.08rem;line-height:1.7;color:var(--fc-soft);max-width:46rem;margin:0}
 .fcf-dir .dir-tabs{display:none;flex-wrap:wrap;gap:.5rem;margin:1.4rem 0 0}
 .fcf-dir.dir-js .dir-tabs{display:flex}
