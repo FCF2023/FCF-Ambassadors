@@ -1,160 +1,171 @@
-# Ambassador space and page cleanup: proposal
+# FCF website: welcome and ambassador page consolidation
 
-Prepared 10 November 2026 from a review of the live site (all 27 published pages), its plugins, and the tools Falls Church Forward already uses.
+First prepared 10 November 2026. Updated 11 November 2026 with Pat's decisions.
 
-## Summary
+## Status
 
-1. **Private ambassador space:** don't build a community inside WordPress. Run the conversation as a private **groups.io** email group (free), keep the **roster and files in a restricted Google Drive folder**, and give ambassadors one password-protected **Ambassador Hub page on the FCF site** that links to both. Cost: $0. Nothing new to patch or update.
-2. **Page cleanup:** the welcome and ambassador material is spread over 7 pages. It fits on **3 evergreen pages plus the seasonal Good Neighbor Day page**. Three pages retire with redirects.
-3. **Fix first:** `/ambassador-finder/` is live and in the sitemap with placeholder contact details (`naudy@example.com`, `(703) 555-0187`). Set it to Draft until the map has real data.
-4. Draft versions of all four pages are in [`drafts/`](drafts/), written as paste-in Custom HTML blocks like the existing pages.
-
----
-
-## Part 1: A private home for ambassadors
-
-### Recommendation
-
-Three small pieces, each doing the one thing it is good at:
-
-| Piece | Tool | What lives there | Who can get in | Your upkeep |
-|---|---|---|---|---|
-| Front door | Password-protected page on fallschurchforward.org (`/ambassador-hub/`) | Links to everything, a short how-to, good-to-know notes | Anyone with the shared password | Edit a page now and then; change the password yearly |
-| Conversation | Private groups.io group (Free plan) | Ideas, questions, announcements, searchable archive | Members you approve | Invite and remove members |
-| Roster and files | Google Drive folder owned by the FCF Gmail account | Roster spreadsheet with contact details, flyers, welcome-kit materials, notes | Only the people you share it with | Share and unshare the folder |
-
-Why this shape:
-
-- **Email reaches people.** Volunteers answer email. They rarely remember to log in to a forum. With groups.io an ambassador replies from their inbox and everything is still archived and searchable on the web.
-- **The site gives it a home.** The hub page is the one bookmark a new ambassador needs, on your own domain, in your own design.
-- **Contact details sit behind per-person access.** The hub page has one shared password, which is fine for a signpost. The roster is the sensitive part, so it lives in Drive where each person is invited individually and can be removed individually. If the page password leaks, nobody's phone number does.
-- **You maintain almost nothing.** No member accounts, no password resets, no extra plugins.
-
-### Why not build it inside WordPress
-
-A real members area means user accounts plus a forum or community plugin. That brings account creation and password resets (with Wordfence login checks in the way), spam sign-ups, more plugins to update on the site that hosts everything else, notification emails that need mail-delivery setup, and cache exceptions for WP Super Cache. Personal contact details would also sit in the website database. For a group this size it is the most work for the least use.
-
-If the shared hub password ever feels too loose, the next step up is giving ambassadors individual logins and restricting the hub page to them (the free Members plugin does this). I would wait until there is a reason.
-
-### Options compared
-
-| Option | Cost | Where people talk | What you maintain | Verdict |
-|---|---|---|---|---|
-| **groups.io Free + hub page + Drive folder** | $0 | Email, with a private web archive | Group membership, Drive sharing, one page | **Recommended** |
-| Google Group + hub page + Drive folder | $0 | Email, with a plainer web archive | One list: share the Drive folder with the group address and membership covers both | Good alternative if you want a single access list from day one |
-| groups.io Premium | $220/year | Email and web | One list: roster (database), files, wiki and calendar all live inside the group | Upgrade path if two lists become a chore |
-| Members area inside WordPress | Free and paid plugins | A forum people must remember to visit | Accounts, resets, spam, plugin updates, mail delivery | Not recommended |
-| Private channel in the existing Discord | $0 | Chat | Assign a role | Fine as an extra for quick chatter, not as the home base |
-
-groups.io Free covers up to 100 members and includes the email group and its archive, but not files, wiki, calendar or database. That is why the roster and files go in Drive. (Plan details checked on groups.io on 10 November 2026.)
-
-### Setup
-
-1. **Create the group** at groups.io, for example `fcf-ambassadors`. Create it from the FCF Gmail account rather than a personal one. Settings: not listed in the public directory, archive visible to members only, new members need approval, replies go to the group. Put the hub link in the welcome message new members receive.
-2. **Create the Drive folder** in FCF's Google Drive, for example "FCF Ambassadors (private)". Add a Roster spreadsheet and move in any flyers or welcome-kit files. Keep general access set to Restricted and share with each ambassador by email. Give them edit rights on the roster so each person keeps their own row current.
-3. **Create the hub page** from [`drafts/ambassador-hub.html`](drafts/ambassador-hub.html). Replace the three placeholder links, set Visibility to Password protected, set the page to noindex in Yoast, and leave it out of the menus.
-4. **Check it** in a private browser window: the page should ask for the password. WordPress remembers the password on a device for about ten days.
-5. **Invite the current ambassadors** to the group and the folder. First message: say hello and ask everyone to add their roster row.
-6. **Add a second owner** to both the group and the folder so the setup does not depend on one person.
-
-Suggested roster columns: name, neighborhood or building, zone (matching the map), email, phone, best way to reach, languages, on the public page (yes/no), joined.
-
-### Upkeep
-
-- **New ambassador:** invite to the group, share the folder, they add their roster row, you add their card to the Community Ambassadors page (now the only place it appears).
-- **Someone steps back:** remove from the group, unshare the folder, remove their roster row and card. Change the hub password if you have any doubt.
-- **Once a year:** change the hub password and skim the roster for stale rows.
-
-### Decisions for you
-
-1. **groups.io or Google Groups?** I recommend groups.io: it is built for exactly this and is nicer to use. Google Groups wins on one point only, a single access list. Both are free.
-2. **Should ambassadors' personal contact details ever be public?** The map is built to show each ambassador's email and phone to anyone. I recommend the public pages show first name, neighborhood and bio, with contact going through the existing form, and that direct contact details stay in the private roster.
-
----
-
-## Part 2: Fewer pages
-
-### Today: 7 pages for one topic
-
-| Page | What it is | Problem |
+| Item | Decision | Status |
 |---|---|---|
-| `/welcome/` | Three tiles, then a full copy of the ambassador cards and form | Duplicates the ambassadors page |
-| `/tips/` | Seven tips for new residents | Reached only from a Welcome tile |
-| `/community-directory/` | One Airtable embed | Thin |
-| `/welcome-newsletters-blogs-forums/` | One Airtable embed | Thin, awkward address |
-| `/community-ambassadors/` | Intro, nine cards, form | The real home, but duplicated |
-| `/ambassador-finder/` | Intro and the map | Placeholder data, linked from nowhere, in the sitemap |
-| `/good-neighbor-day/` | September campaign page | Fine; seasonal |
+| Welcome, ambassadors and directory pages | Consolidate, with redirects. Belén is in Virginia Village. | Drafts final. Ready to apply. |
+| Ambassador space (hub page, groups.io) | On hold pending discussion | Nothing installed. Notes kept in section 7. |
+| Ambassador map | Keep off the site until ready. Remove the GitHub copy. | `index.html` deleted on this branch. Finder page to go to Draft. |
+| Subscribe page | Rename to RSS Feeds | Ready to apply. |
+| "New here?" menu | Try it | Preview built (section 3). Needs a theme edit. |
+| `/farmers-market/` | Fold into `/farmers-market-expansion/` | Ready to apply. |
+| Meeting Finder | Roll into Meeting Search | Needs a decision and a theme edit (section 6). |
 
-The duplication has already caused drift: Belén is listed under **Park Towers** on Welcome and **Virginia Village** on Community Ambassadors.
+"Ready to apply" items are page edits and redirects that go through WordPress itself. The two theme edits need a DreamHost session, because the theme files are only on the server.
 
-### Proposed: 3 evergreen pages, 1 seasonal, 1 private
+---
+
+## 1. Welcome and ambassador pages
+
+Seven pages become three evergreen pages plus the seasonal Good Neighbor Day page.
 
 | Page | Absorbs | Contents |
 |---|---|---|
 | `/welcome/` | `/tips/` | Lead, three tiles, a short "Meet your ambassador" strip, then the tips under "Start here" |
-| `/community-ambassadors/` | `/ambassador-finder/` | Intro, the only copy of the cards, a slot for the map once it is real, the only copy of the form, a link to the hub |
+| `/community-ambassadors/` | `/ambassador-finder/` | Intro, the only copy of the cards, a switched-off slot for the map, the only copy of the form |
 | `/community-directory/` | `/welcome-newsletters-blogs-forums/` | Both Airtable lists under two tabs |
-| `/good-neighbor-day/` | | Unchanged. Show its homepage card in late summer only |
-| `/ambassador-hub/` (new, private) | | See Part 1 |
+| `/good-neighbor-day/` | | Unchanged |
 
-Existing addresses of the surviving pages do not change, so printed links and QR codes keep working.
+Surviving pages keep their addresses, so printed links and QR codes keep working.
 
 ### Redirects
-
-The Redirection plugin is already installed (Tools → Redirection).
 
 | Old address | Send to |
 |---|---|
 | `/tips/` | `/welcome/#start-here` |
 | `/welcome-newsletters-blogs-forums/` | `/community-directory/#word-on-the-street` |
 | `/ambassador-finder/` | `/community-ambassadors/#find` |
+| `/farmers-market/` | `/farmers-market-expansion/` |
 
-`/ambassador-map/` stays as it is. It is the map itself, which gets embedded, not a page people browse to.
+The four old pages go to Draft, not Trash, so they can be brought back.
 
-### Homepage and menu
+### Links checked
 
-- **Homepage "Neighbors, in action":** keep the Welcome and Community Ambassadors cards. Treat Good Neighbor Day and Candidate Forum as seasonal slots rather than permanent ones.
-- **Menu (optional):** none of the welcome pages are in the top menu today. A "New here?" dropdown with Welcome, Community Ambassadors and Community Directory would fix that. "Mission" could make room, since About → Vision covers the same ground.
+All 27 pages and 57 posts were scanned for links to the retiring addresses. The only ones are on `/welcome/` and `/tips/` themselves, and the new Welcome page fixes them. Nothing else on the site needs editing.
 
-### Fix along the way
+### Small fixes included
 
-- Confirm Belén's neighborhood (the draft uses Virginia Village, from the more recently edited page).
-- "Fall Church resident" in Robin's bio (fixed in the draft).
-- "Ways to be a good neigbor" heading on Good Neighbor Day.
-- Two Welcome tile images are 700–830 KB PNG files. Re-saving them smaller will speed the page up.
-
-### Also noticed elsewhere (optional, lower priority)
-
-- `/farmers-market/` and `/farmers-market-expansion/` are two versions of the same petition. Keep one, redirect the other.
-- `/fundraiser-2026/` still shows registration for an event held 27 September 2026. Turn it into a short recap or unpublish it.
-- The homepage "Candidate Forum" card describes the October 2025 forum in the present tense.
-- `/our-vision/` and `/who-we-are/` could be one About page. The Vision page's title is currently "Falls Church Forward".
-- `/meeting-search/` and `/meeting-finder/` are two search boxes over the same meeting records. They could be one page with two modes. This needs template work, so it can wait.
-- `/subscribe/` lists RSS feeds only, while "Get updates" is the email sign-up. Renaming the page "RSS feeds" avoids the mix-up.
-
-Doing only the welcome and ambassador consolidation takes the site from 27 public pages to 24. The optional items would bring it to about 20.
+- Belén: Virginia Village (the old Welcome page said Park Towers).
+- "Fall Church resident" in Robin's bio.
+- Still open: "Ways to be a good neigbor" heading on Good Neighbor Day, and two Welcome tile images that are 700–830 KB.
 
 ---
 
-## Draft pages
+## 2. Ambassador map
+
+- **`/ambassador-finder/`** goes to Draft and redirects to the ambassadors page. It is not linked from the homepage or the menu.
+- **The GitHub copy** (`index.html` in this repository) had the same zones, contacts and code as the live map, with older colors and fonts. It is deleted on this branch. It was also being served publicly by GitHub Pages at `fcf2023.github.io/FCF-Ambassadors/`, placeholder contacts included. That copy goes away when this branch is merged to `main`. Turning off Pages in the repository settings is the cleaner finish.
+- **The live map** is a plain file on the server at `/ambassador-map/`, not a WordPress page. Putting the Finder page in Draft unlinks it, but anyone with the address can still open it and see the placeholder contacts. To take it fully offline, move the `ambassador-map` folder out of `~/fallschurchforward.org` (FileZilla or a DreamHost session). When it is ready, it can be switched on inside the Community Ambassadors page: the draft has a marked slot for it.
+
+---
+
+## 3. "New here?" menu
+
+Previews, rendered with the live theme stylesheet:
+
+- Desktop: [`previews/new-here-desktop.png`](previews/new-here-desktop.png)
+- Desktop after scrolling: [`previews/new-here-desktop-scrolled.png`](previews/new-here-desktop-scrolled.png)
+- Phone menu: [`previews/new-here-mobile.png`](previews/new-here-mobile.png)
+
+What the test showed:
+
+- **It has to take Mission's place.** Added as a ninth item, the menu wraps onto two lines at every desktop width. Swapped for Mission, it fits. The homepage keeps its mission section, About → Vision covers the same ground, and the footer link to Mission stays.
+- **Move the hamburger breakpoint from 1080px to 1140px.** Today's menu wraps between 1081 and 1119px wide. With "New here?" it wraps between 1081 and 1139px. Changing the two `max-width:1080px` menu rules in `style.css` to 1140px removes the wrap entirely.
+
+The dropdown reuses the About dropdown's markup exactly:
+
+```html
+<!-- desktop, in place of the Mission link -->
+<div class="has-dropdown"><a class="navlink" href="/welcome/" aria-haspopup="true">New here?[same chevron svg as About]</a>
+  <div class="dropdown" role="menu">
+    <a role="menuitem" href="/welcome/">Welcome guide</a>
+    <a role="menuitem" href="/community-ambassadors/">Community Ambassadors</a>
+    <a role="menuitem" href="/community-directory/">Community Directory</a>
+  </div>
+</div>
+
+<!-- phone menu, in place of the Mission link -->
+<div class="mm-group"><span class="mm-group-label">New here?</span>
+  <a href="/welcome/">Welcome guide [arrow]</a>
+  <a href="/community-ambassadors/">Community Ambassadors [arrow]</a>
+  <a href="/community-directory/">Community Directory [arrow]</a>
+</div>
+```
+
+This is a theme edit (wherever the menu is built, most likely `header.php`), so it belongs in a DreamHost session: back up the file, make the change, bump the version strings.
+
+---
+
+## 4. Subscribe page
+
+Retitle the page from "Subscribe" to "RSS Feeds". The address `/subscribe/` and the footer's "RSS" link stay as they are.
+
+---
+
+## 5. Farmers market
+
+`/farmers-market/` is the older copy. Its sign-up area still shows the placeholder text "[ Sign-up form goes here — reconnect with your WordPress form ]", and its share buttons already point at `/farmers-market-expansion/`. There is nothing on it to carry over. It goes to Draft and redirects to `/farmers-market-expansion/`. The petition page and its Apps Script endpoint are not touched.
+
+---
+
+## 6. Meeting Finder into Meeting Search
+
+No page or post links to Meeting Finder, and it is `noindex`, so there are no links to update.
+
+It is not quite the same search with fewer options. Both use the same index and the same precision rules, but they answer differently. Tested with "Founders Row":
+
+| | Meeting Search | Meeting Finder |
+|---|---|---|
+| Options | Civic body, date range, summaries / agendas, optional transcripts, sort by relevance / newest / oldest | Search box only |
+| What it lists | One row per document, 20 per page | One row per meeting, the whole list on one page, grouped by year |
+| "Founders Row" | 136 results (349 with transcripts on) | 222 meetings: 134 discussed it, 88 mentioned it in passing |
+| Extras | | Links to the City video and official minutes on each row |
+
+So retiring Finder outright loses three things: one row per meeting, the whole list at once, and the discussed / in passing split.
+
+**Recommended:** add a fourth view to Meeting Search, "Every meeting, by year", beside Relevance / Newest / Oldest. It would call the Finder's existing code (`inc/fcf-ask-enumerate.php`) and respect Search's civic-body and date filters, which Finder cannot do today. Then send `/meeting-finder/` to Meeting Search and put the Finder page in Draft. This is a theme edit for a DreamHost session.
+
+**Quick alternative:** redirect `/meeting-finder/` to Meeting Search with transcripts on and newest first, and accept losing those three things. This can be done at once with the other redirects.
+
+---
+
+## 7. Ambassador space (on hold)
+
+Nothing here is installed, and no page links to a hub. These notes are kept for the discussion.
+
+**Recommendation:** don't build a community inside WordPress. Use three small pieces:
+
+| Piece | Tool | What lives there | Who can get in |
+|---|---|---|---|
+| Front door | Password-protected page on fallschurchforward.org | Links to everything, a short how-to | Anyone with the shared password |
+| Conversation | Private groups.io group (Free plan) | Ideas, questions, announcements, searchable archive | Members you approve |
+| Roster and files | Google Drive folder owned by the FCF account | Roster with contact details, flyers, notes | Only the people you share it with |
+
+| Option | Cost | Where people talk | What you maintain | Verdict |
+|---|---|---|---|---|
+| groups.io Free + hub page + Drive folder | $0 | Email, with a private web archive | Group membership, Drive sharing, one page | Recommended |
+| Google Group + hub page + Drive folder | $0 | Email, with a plainer web archive | One list: share the Drive folder with the group address | Good alternative |
+| groups.io Premium | $220/year | Email and web | One list: roster, files, wiki and calendar inside the group | Upgrade path |
+| Members area inside WordPress | Free and paid plugins | A forum people must remember to visit | Accounts, resets, spam, plugin updates, mail delivery | Not recommended |
+| Private channel in the existing Discord | $0 | Chat | Assign a role | Extra, not home base |
+
+groups.io Free covers up to 100 members and includes the email group and its archive, but not files, wiki, calendar or database (checked on groups.io, 10 November 2026). A draft hub page is in [`drafts/ambassador-hub.html`](drafts/ambassador-hub.html), marked on hold.
+
+Open question for the discussion: should ambassadors' email and phone ever be public? The map is built to show them. The suggestion is to keep them in a private roster and route contact through the existing form.
+
+---
+
+## Files
 
 | File | Becomes |
 |---|---|
 | [`drafts/welcome.html`](drafts/welcome.html) | `/welcome/` |
 | [`drafts/community-ambassadors.html`](drafts/community-ambassadors.html) | `/community-ambassadors/` |
 | [`drafts/community-directory.html`](drafts/community-directory.html) | `/community-directory/` |
-| [`drafts/ambassador-hub.html`](drafts/ambassador-hub.html) | `/ambassador-hub/` (new, password protected) |
+| [`drafts/ambassador-hub.html`](drafts/ambassador-hub.html) | On hold |
+| [`previews/`](previews/) | "New here?" menu previews |
 
-Each file starts with a comment explaining what it replaces and how to install it. They reuse the existing copy, images, Airtable views and Tally form. They were rendered against the live theme stylesheet at desktop and phone widths, but not on the live site, so preview each one in WordPress before publishing. The hub page text is starter copy to edit.
-
-## Suggested order
-
-1. **Now:** set `/ambassador-finder/` to Draft. Confirm Belén's neighborhood.
-2. **Pages:** paste in the three public drafts, add the three redirects, retire the old pages, check the homepage cards.
-3. **Ambassador space:** create the group, the folder and roster, and the hub page, then invite people.
-4. **Later:** put real data in the map and switch it on within the Community Ambassadors page. Pick off the optional items.
-
-## Note on this repository
-
-`index.html` here is an older version of the map than the one live at `/ambassador-map/` (the live one has the current site fonts and colors). Copy the live version back before making map changes from this repository.
+The three public drafts reuse the existing copy, images, Airtable views and Tally form. They were rendered against the live theme stylesheet at desktop and phone widths.
