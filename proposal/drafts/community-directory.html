@@ -1,0 +1,89 @@
+<!--
+  FALLS CHURCH FORWARD — "Community Directory" page (DRAFT)
+
+  WHAT THIS IS
+  Both Airtable lists on one page, under two tabs. It replaces two pages:
+    /community-directory/                 (this one stays)
+    /welcome-newsletters-blogs-forums/    (retire; redirect to /community-directory/#word-on-the-street)
+
+  Nothing changes in Airtable. These are the same two shared views as today.
+
+  HOW TO USE
+  1. Pages -> Community Directory -> replace the Custom HTML block with this whole file.
+  2. Update / Publish.
+  3. Add the redirect  /welcome-newsletters-blogs-forums/  ->  /community-directory/#word-on-the-street
+     (Tools -> Redirection), then trash the Newsletters/Blogs/Forums page.
+
+  A link ending in #word-on-the-street opens the second tab directly.
+  If scripts are blocked, both lists simply show one after the other.
+-->
+
+<style>
+.fcf-dir{--fc-forest:#054A3E;--fc-pine:#117158;--fc-emerald:#2AA47A;--fc-paper:#F7F5EF;--fc-soft:#41544D;--fc-line:rgba(5,74,62,.14);--fc-line-strong:rgba(5,74,62,.24)}
+/* This page uses the site's full content width (the same edges as the header)
+   instead of the narrow reading column, so the lists get room on wide screens.
+   The width follows the window, so it narrows by itself on smaller screens.
+   Delete the next line to go back to the narrow column. */
+.prose:has(.fcf-dir){max-width:none}
+.fcf-dir .dir-lead{font-size:1.08rem;line-height:1.7;color:var(--fc-soft);max-width:46rem;margin:0}
+.fcf-dir .dir-tabs{display:none;flex-wrap:wrap;gap:.5rem;margin:1.4rem 0 0}
+.fcf-dir.dir-js .dir-tabs{display:flex}
+.fcf-dir .dir-tab{font-family:"Public Sans",system-ui,sans-serif;font-weight:700;font-size:.98rem;line-height:1;color:var(--fc-forest);background:transparent;border:1.5px solid var(--fc-line-strong);border-radius:100px;padding:.75em 1.2em;cursor:pointer;transition:background .2s ease,color .2s ease,border-color .2s ease}
+.fcf-dir .dir-tab:hover{border-color:var(--fc-forest)}
+.fcf-dir .dir-tab[aria-selected="true"]{background:var(--fc-forest);border-color:var(--fc-forest);color:#fff}
+.fcf-dir .dir-tab:focus-visible{outline:3px solid var(--fc-emerald);outline-offset:2px}
+.fcf-dir .dir-panel{margin:1rem 0 0;scroll-margin-top:6rem}
+.fcf-dir .dir-panel h2{font-family:"Bricolage Grotesque",system-ui,sans-serif;font-weight:700;color:var(--fc-forest);font-size:clamp(1.3rem,1.15rem + .7vw,1.6rem);margin:1.6rem 0 .7rem}
+.fcf-dir.dir-js .dir-panel h2{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;margin:0}
+.fcf-dir .dir-panel iframe{width:100%;height:800px;border:1px solid var(--fc-line);border-radius:12px;background:transparent;display:block}
+.fcf-dir .dir-panel[hidden]{display:none}
+</style>
+
+<div class="fcf-dir" id="fcf-dir">
+  <p class="dir-lead">Looking for your people? Browse local groups and organizations, or see where neighbors trade news.</p>
+
+  <div class="dir-tabs" role="tablist" aria-label="Directory lists">
+    <button type="button" class="dir-tab" role="tab" id="dir-tab-groups" aria-controls="groups" aria-selected="true">Groups &amp; organizations</button>
+    <button type="button" class="dir-tab" role="tab" id="dir-tab-word" aria-controls="word-on-the-street" aria-selected="false">Newsletters, blogs &amp; forums</button>
+  </div>
+
+  <div class="dir-panel" role="tabpanel" id="groups" aria-labelledby="dir-tab-groups">
+    <h2>Groups &amp; organizations</h2>
+    <iframe class="airtable-embed" src="https://airtable.com/embed/appnwhfBlcf5xQ9JX/shrTuzTiLjpG5s9ia?viewControls=on" title="Community directory: groups and organizations" loading="lazy" frameborder="0"></iframe>
+  </div>
+
+  <div class="dir-panel" role="tabpanel" id="word-on-the-street" aria-labelledby="dir-tab-word">
+    <h2>Newsletters, blogs &amp; forums</h2>
+    <iframe class="airtable-embed" src="https://airtable.com/embed/appnwhfBlcf5xQ9JX/shrKel0SOrMVevpmr?viewControls=on" title="Word on the Street: newsletters, blogs and forums" loading="lazy" frameborder="0"></iframe>
+  </div>
+</div>
+
+<script>
+(function(){
+  var root=document.getElementById("fcf-dir");
+  if(!root){return;}
+  var tabs=root.querySelectorAll(".dir-tab");
+  var panels=root.querySelectorAll(".dir-panel");
+  function show(id){
+    var i;
+    for(i=0;i!==panels.length;i++){panels[i].hidden=(panels[i].id!==id);}
+    for(i=0;i!==tabs.length;i++){tabs[i].setAttribute("aria-selected",tabs[i].getAttribute("aria-controls")===id?"true":"false");}
+  }
+  function fromHash(){
+    var id=window.location.hash.replace("#","");
+    var i;
+    for(i=0;i!==panels.length;i++){if(panels[i].id===id){show(id);return;}}
+    show(panels[0].id);
+  }
+  function onTab(e){
+    var id=e.currentTarget.getAttribute("aria-controls");
+    show(id);
+    if(window.history){if(window.history.replaceState){window.history.replaceState(null,"","#"+id);}}
+  }
+  var i;
+  for(i=0;i!==tabs.length;i++){tabs[i].addEventListener("click",onTab);}
+  root.className+=" dir-js";
+  fromHash();
+  window.addEventListener("hashchange",fromHash);
+})();
+</script>

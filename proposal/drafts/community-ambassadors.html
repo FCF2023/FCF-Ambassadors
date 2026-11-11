@@ -1,0 +1,159 @@
+<!--
+  FALLS CHURCH FORWARD — "Community Ambassadors" page (DRAFT)
+
+  WHAT THIS IS
+  The one public home for the ambassador program. It replaces two pages:
+    /community-ambassadors/  (this one stays)
+    /ambassador-finder/      (retire; redirect to /community-ambassadors/#find)
+
+  WHAT CHANGED vs. the current /community-ambassadors/
+  - This is now the ONLY copy of the ambassador cards and of the sign-up form.
+    (The Welcome page used to repeat both, and the two copies had drifted.)
+  - A slot for the "find your ambassador" map sits above the cards. It is
+    switched off until the map shows real ambassadors. See MAP below.
+  - Typo fixed in Robin's bio ("Fall Church" -> "Falls Church").
+  - Belén is listed under Virginia Village (confirmed). The old Welcome page
+    said Park Towers.
+
+  HOW TO USE
+  1. Pages -> Community Ambassadors -> replace the Custom HTML block with this whole file.
+  2. Update / Publish.
+  3. Add the redirect  /ambassador-finder/  ->  /community-ambassadors/#find  (Tools -> Redirection),
+     then move the Find Your Ambassador page to Draft.
+
+  TO ADD AN AMBASSADOR
+  Copy one <li class="amb-card">...</li> block, change the photo, name,
+  neighborhood and bio. This is the only place you need to do it.
+
+  MAP
+  When /ambassador-map/ has real zones and names, delete the two lines marked
+  MAP-OFF-START and MAP-OFF-END (keep what is between them) to show the map.
+-->
+
+<style>
+.fcf-amb{--fc-forest:#054A3E;--fc-pine:#117158;--fc-emerald:#2AA47A;--fc-paper:#F7F5EF;--fc-mist:#E6EFE8;--fc-soft:#41544D;--fc-line:rgba(5,74,62,.14)}
+.fcf-amb a{color:var(--fc-pine);text-decoration:underline;text-underline-offset:2px}
+.fcf-amb a:hover{color:var(--fc-emerald)}
+.fcf-amb h2{font-family:"Bricolage Grotesque",system-ui,sans-serif;font-weight:700;color:var(--fc-forest);font-size:clamp(1.5rem,1.3rem + 1vw,2rem);margin:2.6rem 0 .5rem;scroll-margin-top:6rem}
+.fcf-amb .amb-intro{font-size:1.08rem;line-height:1.7;color:var(--fc-soft);max-width:46rem;margin:0}
+.fcf-amb .amb-sub{font-size:1rem;line-height:1.6;color:var(--fc-soft);max-width:46rem;margin:0}
+
+/* map slot */
+.fcf-amb .amb-map{margin:1.2rem 0 0}
+.fcf-amb .amb-map iframe{width:100%;height:640px;border:1px solid var(--fc-line);border-radius:16px;display:block}
+
+/* ambassador cards */
+.fcf-amb .amb-grid{list-style:none;margin:1.4rem 0 0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:1.1rem}
+.fcf-amb .amb-grid li{margin:0}
+.fcf-amb .amb-card{background:var(--fc-paper);border:1px solid var(--fc-line);border-radius:16px;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 2px 10px rgba(6,52,44,.06);transition:transform .25s ease,box-shadow .25s ease}
+.fcf-amb .amb-card:hover{transform:translateY(-4px);box-shadow:0 18px 40px -22px rgba(6,52,44,.4)}
+.fcf-amb .amb-card img{width:100%;aspect-ratio:1/1;object-fit:cover;display:block;margin:0;border:0;border-radius:0;box-shadow:none}
+.fcf-amb .amb-body{padding:.85rem 1rem 1.05rem}
+.fcf-amb .amb-name{font-family:"Bricolage Grotesque",system-ui,sans-serif;font-weight:700;font-size:1.15rem;color:var(--fc-forest);line-height:1.15;margin:0}
+.fcf-amb .amb-hood{font-family:"Space Mono",ui-monospace,monospace;font-size:.82rem;font-weight:700;letter-spacing:.04em;color:var(--fc-pine);margin:.3rem 0 .55rem}
+.fcf-amb .amb-bio{font-size:.9rem;line-height:1.5;color:var(--fc-soft);margin:0}
+
+/* connect / join */
+.fcf-amb .amb-cta{margin:2.6rem 0 0;background:var(--fc-mist);border-radius:16px;padding:1.4rem 1.5rem;font-size:1.08rem;color:var(--fc-forest);scroll-margin-top:6rem}
+.fcf-amb .amb-cta h2{margin:0 0 .3rem;text-align:center}
+.fcf-amb .amb-cta > p{text-align:center;margin:0 0 1rem;color:var(--fc-forest)}
+.fcf-amb .amb-cta a{font-weight:600}
+.fcf-amb .amb-form{margin-top:.5rem}
+</style>
+
+<div class="fcf-amb">
+  <p class="amb-intro">Community ambassadors are neighbors who want to welcome anyone new to the Little City and make sure people feel connected. Feeling like you are part of a community has tons of positive impacts on everything from health to governance! If you’d like to be connected to someone or volunteer to become a community ambassador yourself, let us know. Ask us about anything, or join our team — <a href="#join">fill out the form below</a> or reach out to us <a href="mailto:fallschurchforward@gmail.com">by email</a>.</p>
+
+  <h2 id="find">Meet your ambassadors</h2>
+  <p class="amb-sub">Find the neighbor closest to you. No ambassador on your block yet? We’d love to hear from you.</p>
+
+  <!-- MAP-OFF-START (delete this line and the MAP-OFF-END line to show the map)
+  <div class="amb-map">
+    <iframe src="/ambassador-map/" title="Find your ambassador" loading="lazy"></iframe>
+  </div>
+  MAP-OFF-END -->
+
+  <ul class="amb-grid">
+    <li class="amb-card">
+      <img src="/wp-content/uploads/fcf-pages/cs0r9pobvolcu4dm.jpg" alt="Community ambassador Robin" loading="lazy">
+      <div class="amb-body">
+        <p class="amb-name">Robin</p>
+        <p class="amb-hood">Falls Chase</p>
+        <p class="amb-bio">Robin has been a Falls Church resident since 2021. She enjoys taking walks around the city, delving into local history, and baking with locally sourced ingredients.</p>
+      </div>
+    </li>
+    <li class="amb-card">
+      <img src="/wp-content/uploads/fcf-pages/7lr842gc74rvw0yo.jpg" alt="Community ambassador Liz" loading="lazy">
+      <div class="amb-body">
+        <p class="amb-name">Liz</p>
+        <p class="amb-hood">Broadmont</p>
+        <p class="amb-bio">Liz has been a Falls Church resident since 2009. She loves walking in Isaac Crossman Park, discovering new treats at the Farmer’s Market, and taking advantage of Recreation and Parks and Mary Riley Styles Library programs.</p>
+      </div>
+    </li>
+    <li class="amb-card">
+      <img src="/wp-content/uploads/fcf-pages/cr4i1qr41vawqlsx.jpg" alt="Community ambassador Robert" loading="lazy">
+      <div class="amb-body">
+        <p class="amb-name">Robert</p>
+        <p class="amb-hood">Park Towers</p>
+        <p class="amb-bio">Robert enjoys Falls Church’s small-town charm, award-winning restaurants, and easy access to miles of bike trails.</p>
+      </div>
+    </li>
+    <li class="amb-card">
+      <img src="/wp-content/uploads/fcf-pages/pcx4qgaiz8vcagyl.png" alt="Community ambassador Mary" loading="lazy">
+      <div class="amb-body">
+        <p class="amb-name">Mary</p>
+        <p class="amb-hood">South Spring</p>
+        <p class="amb-bio">Mary is an adjunct professor and pianist (soon to be a doctor of music) and a local piano teacher. She loves being a part of the FCC community and is excited to welcome you!</p>
+      </div>
+    </li>
+    <li class="amb-card">
+      <img src="/wp-content/uploads/fcf-pages/gsgrczwqrz88t7a3.jpg" alt="Community ambassador David" loading="lazy">
+      <div class="amb-body">
+        <p class="amb-name">David</p>
+        <p class="amb-hood">Crossman Estates</p>
+        <p class="amb-bio">David, a 6-year resident, enjoys exploring local parks with his family and is active in sustainability groups.</p>
+      </div>
+    </li>
+    <li class="amb-card">
+      <img src="/wp-content/uploads/fcf-pages/fj5paltq63iwke1f.jpg" alt="Community ambassador Toni" loading="lazy">
+      <div class="amb-body">
+        <p class="amb-name">Toni</p>
+        <p class="amb-hood">Pearson Square</p>
+        <p class="amb-bio">Toni has lived at Pearson Square since 2020. In her free time, she enjoys exploring the area by transit and foot.</p>
+      </div>
+    </li>
+    <li class="amb-card">
+      <img src="/wp-content/uploads/fcf-pages/se7y3e2ozu7ii4u9.jpg" alt="Community ambassador Velika (Lika)" loading="lazy">
+      <div class="amb-body">
+        <p class="amb-name">Velika (Lika)</p>
+        <p class="amb-hood">Greenway Downs</p>
+        <p class="amb-bio">Lika’s family moved to Falls Church City in 2015 and they love all the parks, trails, secret paths, and streams. They are big fans of the Community Center and the library.</p>
+      </div>
+    </li>
+    <li class="amb-card">
+      <img src="/wp-content/uploads/fcf-pages/j9ng944opcigab1d.jpg" alt="Community ambassador Belén" loading="lazy">
+      <div class="amb-body">
+        <p class="amb-name">Belén</p>
+        <p class="amb-hood">Virginia Village</p>
+        <p class="amb-bio">Belén was welcomed by Falls Church city residents in 2022. She fosters learner-centered initiatives and co-designs community initiatives. She is a fan of the city of Falls Church and its welcoming vibe!</p>
+      </div>
+    </li>
+    <li class="amb-card">
+      <img src="/wp-content/uploads/fcf-pages/m57adv131pdffea9.jpg" alt="Community ambassador Dylan" loading="lazy">
+      <div class="amb-body">
+        <p class="amb-name">Dylan</p>
+        <p class="amb-hood">Jefferson Village</p>
+        <p class="amb-bio">You might catch Dylan biking, taking photos, or walking his dog around the neighborhood. As his mom likes to say: he has never met a stranger, so is very much looking forward to meeting you.</p>
+      </div>
+    </li>
+  </ul>
+
+  <div class="amb-cta" id="join">
+    <h2>Say hello, or join the team</h2>
+    <p>Want to join our <strong>ambassadors team</strong>? Have a question? Let us know!</p>
+    <div class="amb-form">
+      <iframe data-tally-src="https://tally.so/embed/n9v6p5?alignLeft=1&amp;hideTitle=1&amp;transparentBackground=1&amp;dynamicHeight=1" loading="lazy" width="100%" height="367" frameborder="0" marginheight="0" marginwidth="0" title="Welcome Campaign"></iframe>
+      <script>var d=document,w="https://tally.so/widgets/embed.js",v=function(){"undefined"!=typeof Tally?Tally.loadEmbeds():d.querySelectorAll("iframe[data-tally-src]:not([src])").forEach((function(e){e.src=e.dataset.tallySrc}))};if("undefined"!=typeof Tally)v();else if(d.querySelector('script[src="'+w+'"]')==null){var s=d.createElement("script");s.src=w,s.onload=v,s.onerror=v,d.body.appendChild(s);}</script>
+    </div>
+  </div>
+</div>

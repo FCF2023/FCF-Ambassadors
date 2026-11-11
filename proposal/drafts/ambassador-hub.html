@@ -1,0 +1,107 @@
+<!--
+  ON HOLD (11 Nov 2026): not to be installed until the ambassador space has
+  been discussed. No page on the site links here.
+
+  FALLS CHURCH FORWARD — "Ambassador Hub" page (DRAFT, private)
+
+  WHAT THIS IS
+  The front door for ambassadors: one bookmark that leads to the email group,
+  the roster and the shared folder. It is a signpost, not a vault. The page
+  itself holds no phone numbers or personal emails. Those stay in the roster,
+  which only invited people can open.
+
+  HOW TO USE
+  1. Pages -> Add New. Title "Ambassador Hub". Permalink slug: ambassador-hub
+  2. Add one "Custom HTML" block and paste this whole file.
+  3. Replace the three links marked REPLACE below with your real ones.
+  4. Page settings -> Visibility -> Password protected. Choose a password.
+  5. Yoast box -> Advanced -> "Allow search engines to show this page?" -> No.
+  6. Publish. Do not add the page to any menu.
+  7. Open the page in a private browser window and confirm it asks for the password.
+
+  The text below is starter copy. Edit it to match how the team actually works.
+-->
+
+<style>
+.fcf-hub{--fc-forest:#054A3E;--fc-pine:#117158;--fc-emerald:#2AA47A;--fc-gold:#E3A93B;--fc-paper:#F7F5EF;--fc-mist:#E6EFE8;--fc-soft:#41544D;--fc-line:rgba(5,74,62,.14)}
+.fcf-hub a{color:var(--fc-pine);text-decoration:underline;text-underline-offset:2px}
+.fcf-hub a:hover{color:var(--fc-emerald)}
+.fcf-hub h2{font-family:"Bricolage Grotesque",system-ui,sans-serif;font-weight:700;color:var(--fc-forest);font-size:clamp(1.4rem,1.25rem + .8vw,1.8rem);margin:2.6rem 0 .6rem}
+.fcf-hub p{color:var(--fc-soft);line-height:1.7}
+.fcf-hub .hub-lead{font-size:1.12rem;line-height:1.7;color:var(--fc-soft);max-width:46rem;margin:0}
+.fcf-hub .hub-lead strong{color:var(--fc-forest)}
+.fcf-hub .hub-private{display:inline-block;font-family:"Space Mono",ui-monospace,monospace;font-size:.78rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#5a4208;background:#F8E7BC;border-radius:100px;padding:.4em .9em;margin:0 0 1rem}
+
+/* the four doors */
+.fcf-hub .hub-doors{list-style:none;margin:1.6rem 0 0;padding:0;display:grid;grid-template-columns:repeat(2,1fr);gap:1.1rem}
+.fcf-hub .hub-doors li{margin:0}
+.fcf-hub .hub-door{display:flex;flex-direction:column;height:100%;background:var(--fc-paper);border:1px solid var(--fc-line);border-radius:16px;padding:1.2rem 1.3rem 1.3rem;text-decoration:none;box-shadow:0 2px 10px rgba(6,52,44,.06);transition:transform .25s ease,box-shadow .25s ease}
+.fcf-hub .hub-door:hover{transform:translateY(-4px);box-shadow:0 18px 40px -22px rgba(6,52,44,.4)}
+.fcf-hub .hub-door h3{font-family:"Bricolage Grotesque",system-ui,sans-serif;font-weight:700;color:var(--fc-forest);font-size:1.2rem;margin:0 0 .3rem}
+.fcf-hub .hub-door p{font-size:.94rem;line-height:1.5;color:var(--fc-soft);margin:0}
+.fcf-hub .hub-door .hub-go{margin-top:.8rem;font-family:"Space Mono",ui-monospace,monospace;font-size:.8rem;font-weight:700;letter-spacing:.03em;color:var(--fc-pine);overflow-wrap:anywhere}
+
+/* steps */
+.fcf-hub .hub-steps{margin:1rem 0 0;padding-left:1.4rem}
+.fcf-hub .hub-steps li{color:var(--fc-soft);line-height:1.65;margin:.55rem 0 0;padding-left:.2rem}
+.fcf-hub .hub-steps li strong{color:var(--fc-forest)}
+
+/* good to know */
+.fcf-hub .hub-notes{margin:1rem 0 0;background:var(--fc-mist);border-radius:16px;padding:1.2rem 1.4rem}
+.fcf-hub .hub-notes ul{margin:0;padding-left:1.2rem}
+.fcf-hub .hub-notes li{color:var(--fc-forest);line-height:1.6;margin:.45rem 0 0}
+.fcf-hub .hub-notes li:first-child{margin-top:0}
+
+@media(max-width:560px){
+  .fcf-hub .hub-doors{grid-template-columns:1fr}
+}
+</style>
+
+<div class="fcf-hub">
+  <p class="hub-private">Ambassadors only</p>
+  <p class="hub-lead"><strong>Thanks for being a community ambassador.</strong> Everything the team shares lives behind the four links below. Please keep this page and its password within the team.</p>
+
+  <ul class="hub-doors">
+    <li><!-- REPLACE with your group's address, e.g. https://groups.io/g/fcf-ambassadors -->
+      <a class="hub-door" href="https://groups.io/g/REPLACE-GROUP-NAME">
+        <h3>Talk to the team</h3>
+        <p>Email every ambassador at once, share an idea, or read past conversations.</p>
+        <p class="hub-go">Open the email group</p>
+      </a></li>
+    <li><!-- REPLACE with the link to the roster spreadsheet (shared with invited people only) -->
+      <a class="hub-door" href="https://docs.google.com/spreadsheets/d/REPLACE-ROSTER-LINK">
+        <h3>Roster</h3>
+        <p>Who covers which neighborhood and how to reach them. Keep your own row up to date.</p>
+        <p class="hub-go">Open the roster</p>
+      </a></li>
+    <li><!-- REPLACE with the link to the shared folder (shared with invited people only) -->
+      <a class="hub-door" href="https://drive.google.com/drive/folders/REPLACE-FOLDER-LINK">
+        <h3>Shared folder</h3>
+        <p>Flyers, welcome-kit materials, meeting notes and anything else worth keeping.</p>
+        <p class="hub-go">Open the folder</p>
+      </a></li>
+    <li>
+      <a class="hub-door" href="/calendar/">
+        <h3>Calendar</h3>
+        <p>Happy hours, member meetings and volunteer days. Bring a new neighbor along.</p>
+        <p class="hub-go">See what’s coming up</p>
+      </a></li>
+  </ul>
+
+  <h2>When a new neighbor reaches out</h2>
+  <ol class="hub-steps">
+    <li><strong>Say hello within a couple of days.</strong> A short, friendly note is plenty.</li>
+    <li><strong>Ask what they’re looking for.</strong> Schools, parks, getting around, meeting people: let them steer.</li>
+    <li><strong>Point them somewhere useful.</strong> The <a href="/welcome/">Welcome guide</a> and the <a href="/community-directory/">Community Directory</a> cover most first questions. Invite them to whatever is next on the calendar.</li>
+    <li><strong>Stuck? Ask the group.</strong> Someone on the team will know, and the answer helps the next ambassador too.</li>
+  </ol>
+
+  <h2>Good to know</h2>
+  <div class="hub-notes">
+    <ul>
+      <li>Your public card on the <a href="/community-ambassadors/">Community Ambassadors</a> page shows your first name, neighborhood and bio only. Phone numbers and email addresses stay in the roster.</li>
+      <li>Know someone who would make a great ambassador? Send them to the form on the Community Ambassadors page.</li>
+      <li>Moving, stepping back, or want your card changed? Email <a href="mailto:fallschurchforward@gmail.com">fallschurchforward@gmail.com</a>.</li>
+    </ul>
+  </div>
+</div>
