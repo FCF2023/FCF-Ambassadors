@@ -8,7 +8,7 @@ First prepared 10 November 2026. Updated 11 November 2026: decisions recorded, a
 |---|---|---|
 | Welcome, ambassadors and directory pages | Consolidate, with redirects. Belén is in Virginia Village. | **Live** 11 Nov. Checked at desktop and phone widths. |
 | Ambassador space (hub page, groups.io) | On hold pending discussion | Nothing installed. Notes kept in section 7. |
-| Ambassador map | Keep off the site until ready. Remove the GitHub copy. | Finder page in Draft. `index.html` deleted on this branch; still on GitHub Pages until merged. |
+| Ambassador map | Keep off the site until ready. Remove the GitHub copy. | Finder page in Draft. The GitHub copy (`index.html`) is removed from this repository. |
 | Community Directory width | Let the lists use more of a wide screen | **Live** 11 Nov. Checked at seven window widths. |
 | Subscribe page | Rename to RSS Feeds | **Live** 11 Nov. |
 | "New here?" menu | Put it live, with Mission moved under About | **Live** 11 Nov. One CSS rule still to paste (section 3). |
@@ -80,7 +80,7 @@ All 27 pages and 57 posts were scanned for links to the retiring addresses. The 
 ## 2. Ambassador map
 
 - **`/ambassador-finder/`** is in Draft and redirects to the ambassadors page. It is not linked from the homepage or the menu.
-- **The GitHub copy** (`index.html` in this repository) had the same zones, contacts and code as the live map, with older colors and fonts. It is deleted on this branch. It was also being served publicly by GitHub Pages at `fcf2023.github.io/FCF-Ambassadors/`, placeholder contacts included. That copy goes away when this branch is merged to `main`. Turning off Pages in the repository settings is the cleaner finish.
+- **The GitHub copy** (`index.html` in this repository) had the same zones, contacts and code as the live map, with older colors and fonts. It was removed from this repository on 11 November 2026 (pull request #1). GitHub Pages had been serving it publicly at `fcf2023.github.io/FCF-Ambassadors/`, placeholder contacts included; with the file gone there is no map for Pages to serve. Turning off Pages in the repository settings is the cleaner finish.
 - **The live map** is a plain file on the server at `/ambassador-map/`, not a WordPress page. Putting the Finder page in Draft unlinks it, but anyone with the address can still open it and see the placeholder contacts. To take it fully offline, move the `ambassador-map` folder out of `~/fallschurchforward.org` (FileZilla or a DreamHost session). When it is ready, it can be switched on inside the Community Ambassadors page: the draft has a marked slot for it.
 
 ---
